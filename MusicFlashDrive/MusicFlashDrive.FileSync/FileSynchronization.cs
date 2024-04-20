@@ -1,4 +1,7 @@
-﻿namespace MusicFlashDrive.FileSync
+﻿using MusicFlashDrive.FileSync.File;
+using MusicFlashDrive.FileSync.Storage;
+
+namespace MusicFlashDrive.FileSync
 {
 	/// <summary>
 	/// Синхронизатор файлов.
@@ -23,7 +26,22 @@
 
 		public void Execute()
 		{
-			
+			foreach (var fileEntity in FilesFolder.Instance.GetList())
+			{
+				Console.WriteLine(fileEntity.Name);
+				Console.WriteLine(fileEntity.Hash);
+				Console.WriteLine(fileEntity.Length);
+				Console.WriteLine(fileEntity.FullName);
+				Console.WriteLine("================================");
+
+				var destinationPath = Path.Combine(this.destination, "Ку-ку");
+				if (!Directory.Exists(destinationPath))
+					Directory.CreateDirectory(destinationPath);
+				var file = Path.Combine(destinationPath, fileEntity.Name);
+				if (System.IO.File.Exists(file))
+					continue;
+				fileEntity.FileInfo.MoveTo(file);
+			}
 		}
 
 		#endregion
@@ -42,6 +60,21 @@
 				throw new ArgumentException("Destination directory does not exist.");
 		}
 
+		/// <summary>
+		/// Инициализация файлового хранилища.
+		/// </summary>
+		private void InitFileStore()
+		{
+			var files = Directory.GetFiles(this.source, "*.mp3", SearchOption.AllDirectories);
+			foreach (var file in files)
+			{
+				FilesFolder.Instance.Add(new FileEntity()
+				{
+					FileInfo = new FileInfo(file)
+				});
+			}
+		}
+
 		#endregion
 
 		#region Конструктор
@@ -55,7 +88,8 @@
 		{
 			this.source = source;
 			this.destination = destination;
-			Validator();
+			this.Validator();
+			this.InitFileStore();
 		}
 
 		#endregion
