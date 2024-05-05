@@ -24,8 +24,8 @@ namespace MusicFlashDrive
 
 				Console.WriteLine("Start synchronization...");
 
-				var fileSync = new FileSynchronization(source, destination);
-				fileSync.Execute();
+				var fileOperation = new FileOperations(new FileSynchronization(new FlashDrive(source, destination)));
+				fileOperation.Run();
 
 				Console.WriteLine("Synchronization completed.");
 			}			

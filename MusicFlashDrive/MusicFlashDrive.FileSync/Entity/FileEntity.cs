@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
+using TagLib;
 
-namespace MusicFlashDrive.FileSync.File
+namespace MusicFlashDrive.FileSync
 {
 	/// <summary>
 	/// Сущность файла.
@@ -25,7 +26,17 @@ namespace MusicFlashDrive.FileSync.File
 		/// <summary>
 		/// Размер.
 		/// </summary>
-		public string Length => BytesToString(FileInfo.Length);
+		public long Length => FileInfo.Length;
+
+		/// <summary>
+		/// Размер.
+		/// </summary>
+		public string Size => BytesToString(FileInfo.Length);
+
+		/// <summary>
+		/// Теги.
+		/// </summary>
+		public Tag Tag => TagLib.File.Create(FileInfo.FullName).GetTag(TagTypes.Id3v2);
 
 		/// <summary>
 		/// Информация о файле.

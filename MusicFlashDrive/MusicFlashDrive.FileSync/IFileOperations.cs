@@ -1,9 +1,9 @@
 ﻿namespace MusicFlashDrive.FileSync
 {
 	/// <summary>
-	/// Синхронизатор файлов.
+	/// Файловая операция.
 	/// </summary>
-	public interface IFileSynchronization
+	public interface IFileOperations
 	{
 		/// <summary>
 		/// Выполнить.
