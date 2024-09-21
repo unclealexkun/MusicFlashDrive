@@ -28,29 +28,61 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			groupBox1 = new GroupBox();
+			groupBoxFileOperation = new GroupBox();
+			buttonCopyFile = new Button();
+			comboBoxDrive = new ComboBox();
+			labelDrive = new Label();
 			buttonPathSource = new Button();
 			textBoxPathSource = new TextBox();
 			labelPathSource = new Label();
-			labelDrive = new Label();
-			comboBoxDrive = new ComboBox();
-			groupBox1.SuspendLayout();
+			labelHello = new Label();
+			groupBoxFileOperation.SuspendLayout();
 			SuspendLayout();
 			// 
-			// groupBox1
+			// groupBoxFileOperation
 			// 
-			groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			groupBox1.Controls.Add(comboBoxDrive);
-			groupBox1.Controls.Add(labelDrive);
-			groupBox1.Controls.Add(buttonPathSource);
-			groupBox1.Controls.Add(textBoxPathSource);
-			groupBox1.Controls.Add(labelPathSource);
-			groupBox1.Location = new Point(12, 40);
-			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new Size(570, 123);
-			groupBox1.TabIndex = 0;
-			groupBox1.TabStop = false;
-			groupBox1.Text = "Операция с файлами";
+			groupBoxFileOperation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			groupBoxFileOperation.Controls.Add(buttonCopyFile);
+			groupBoxFileOperation.Controls.Add(comboBoxDrive);
+			groupBoxFileOperation.Controls.Add(labelDrive);
+			groupBoxFileOperation.Controls.Add(buttonPathSource);
+			groupBoxFileOperation.Controls.Add(textBoxPathSource);
+			groupBoxFileOperation.Controls.Add(labelPathSource);
+			groupBoxFileOperation.Location = new Point(12, 44);
+			groupBoxFileOperation.Name = "groupBoxFileOperation";
+			groupBoxFileOperation.Size = new Size(570, 159);
+			groupBoxFileOperation.TabIndex = 0;
+			groupBoxFileOperation.TabStop = false;
+			groupBoxFileOperation.Text = "Операция с файлами";
+			// 
+			// buttonCopyFile
+			// 
+			buttonCopyFile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+			buttonCopyFile.Location = new Point(475, 121);
+			buttonCopyFile.Name = "buttonCopyFile";
+			buttonCopyFile.Size = new Size(89, 23);
+			buttonCopyFile.TabIndex = 5;
+			buttonCopyFile.Text = "Копировать";
+			buttonCopyFile.UseVisualStyleBackColor = true;
+			buttonCopyFile.Click += this.buttonCopyFile_Click;
+			// 
+			// comboBoxDrive
+			// 
+			comboBoxDrive.FormattingEnabled = true;
+			comboBoxDrive.Location = new Point(6, 81);
+			comboBoxDrive.Name = "comboBoxDrive";
+			comboBoxDrive.Size = new Size(60, 23);
+			comboBoxDrive.TabIndex = 4;
+			// 
+			// labelDrive
+			// 
+			labelDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			labelDrive.AutoSize = true;
+			labelDrive.Location = new Point(6, 63);
+			labelDrive.Name = "labelDrive";
+			labelDrive.Size = new Size(60, 15);
+			labelDrive.TabIndex = 3;
+			labelDrive.Text = "Носитель";
 			// 
 			// buttonPathSource
 			// 
@@ -61,6 +93,7 @@
 			buttonPathSource.TabIndex = 2;
 			buttonPathSource.Text = "...";
 			buttonPathSource.UseVisualStyleBackColor = true;
+			buttonPathSource.Click += buttonPathSource_Click;
 			// 
 			// textBoxPathSource
 			// 
@@ -80,45 +113,39 @@
 			labelPathSource.TabIndex = 0;
 			labelPathSource.Text = "Папка источник";
 			// 
-			// labelDrive
+			// labelHello
 			// 
-			labelDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			labelDrive.AutoSize = true;
-			labelDrive.Location = new Point(6, 63);
-			labelDrive.Name = "labelDrive";
-			labelDrive.Size = new Size(60, 15);
-			labelDrive.TabIndex = 3;
-			labelDrive.Text = "Носитель";
-			// 
-			// comboBoxDrive
-			// 
-			comboBoxDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			comboBoxDrive.FormattingEnabled = true;
-			comboBoxDrive.Location = new Point(6, 81);
-			comboBoxDrive.Name = "comboBoxDrive";
-			comboBoxDrive.Size = new Size(60, 23);
-			comboBoxDrive.TabIndex = 4;
+			labelHello.AutoSize = true;
+			labelHello.Location = new Point(12, 26);
+			labelHello.Name = "labelHello";
+			labelHello.Size = new Size(38, 15);
+			labelHello.TabIndex = 1;
+			labelHello.Text = "Hello!";
 			// 
 			// MainForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(594, 208);
-			Controls.Add(groupBox1);
+			ClientSize = new Size(594, 244);
+			Controls.Add(labelHello);
+			Controls.Add(groupBoxFileOperation);
 			Name = "MainForm";
 			Text = "Music Flash Drive";
-			groupBox1.ResumeLayout(false);
-			groupBox1.PerformLayout();
+			groupBoxFileOperation.ResumeLayout(false);
+			groupBoxFileOperation.PerformLayout();
 			ResumeLayout(false);
+			PerformLayout();
 		}
 
 		#endregion
 
-		private GroupBox groupBox1;
+		private GroupBox groupBoxFileOperation;
 		private Label labelPathSource;
 		private TextBox textBoxPathSource;
 		private Button buttonPathSource;
 		private ComboBox comboBoxDrive;
 		private Label labelDrive;
+		private Label labelHello;
+		private Button buttonCopyFile;
 	}
 }
