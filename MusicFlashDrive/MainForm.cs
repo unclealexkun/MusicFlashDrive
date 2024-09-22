@@ -10,7 +10,7 @@ namespace MusicFlashDrive
 			if (!string.IsNullOrEmpty(result.ToString()))
 			{
 				textBoxPathSource.Text = openFileDialog.SelectedPath;
-				Properties.Settings.Default.LastPath = openFileDialog.SelectedPath;
+				Properties.Settings.Default.LastPathCopy = openFileDialog.SelectedPath;
 				Properties.Settings.Default.Save();
 			}
 		}
@@ -29,8 +29,8 @@ namespace MusicFlashDrive
 			var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
 			if (drives.Any())
 				comboBoxDrive.Items.AddRange(drives.Select(drive => drive.Name).ToArray());
-			if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPath))
-				textBoxPathSource.Text = Properties.Settings.Default.LastPath;
+			if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPathCopy))
+				textBoxPathSource.Text = Properties.Settings.Default.LastPathCopy;
 		}
 		#endregion
 	}

@@ -26,12 +26,12 @@ namespace MusicFlashDrive.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string LastPath {
+        public string LastPathCopy {
             get {
-                return ((string)(this["LastPath"]));
+                return ((string)(this["LastPathCopy"]));
             }
             set {
-                this["LastPath"] = value;
+                this["LastPathCopy"] = value;
             }
         }
     }
