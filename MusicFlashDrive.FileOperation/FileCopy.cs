@@ -1,7 +1,89 @@
-﻿namespace MusicFlashDrive.FileOperation
+﻿
+namespace MusicFlashDrive.FileOperation
 {
-	public class FileCopy
+	/// <summary>
+	/// Копирование файлов.
+	/// </summary>
+	public class FileCopy : IFileCopy
 	{
+		#region Константы
 
+		/// <summary>
+		/// Фрагмент.
+		/// </summary>
+		private readonly int ChunkSize = 5;
+
+		#endregion
+
+		#region Поля и свойства
+
+		/// <summary>
+		/// Директория источник.
+		/// </summary>
+		public DirectoryInfo Source { get; private set; }
+		/// <summary>
+		/// Целевая директория.
+		/// </summary>
+		public DirectoryInfo Destination { get; private set; }
+
+		#endregion
+
+		#region IFileCopy
+
+		public void Execute()
+		{
+			var files = Source.GetFiles("*.mp3", SearchOption.AllDirectories);
+			var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
+
+			for (int step = 0; step < steps; ++step)
+			{
+				var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
+				Thread thread = new(() => CopingAsync(processedFiles));
+				thread.IsBackground = true;
+				thread.Start();
+			}
+		}
+
+
+
+		#endregion
+		#region Методы
+
+		/// <summary>
+		/// Асинхронное копирование файлов.
+		/// </summary>
+		/// <param name="files">Копируемые файлы.</param>
+		private async Task<Task> CopingAsync(IEnumerable<FileInfo> files)
+		{
+			foreach (var file in files)
+			{
+				using (var sourceStream = File.Open(file.FullName, FileMode.Open))
+				{
+					using (var destinationStream = File.Create(Destination.FullName + file.Name))
+					{
+						await sourceStream.CopyToAsync(destinationStream);
+					}
+				}
+			}
+
+			return Task.CompletedTask;
+		}
+
+		#endregion
+
+		#region Конструктор
+
+		public FileCopy(string source, string destination) 
+		{
+			if (!Path.Exists(source))
+				throw new DirectoryNotFoundException(source);
+			if (!Path.Exists(destination))
+				throw new DirectoryNotFoundException(destination);
+
+			this.Source = new DirectoryInfo(source);
+			this.Destination = new DirectoryInfo(destination);
+		}
+
+		#endregion
 	}
 }

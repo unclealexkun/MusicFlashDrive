@@ -1,3 +1,5 @@
+using MusicFlashDrive.FileOperation;
+
 namespace MusicFlashDrive
 {
 	public partial class MainForm : Form
@@ -17,7 +19,8 @@ namespace MusicFlashDrive
 
 		public void buttonCopyFile_Click(object sender, EventArgs e)
 		{
-			
+			var fileCopy = new FileCopy(textBoxPathSource.Text, $"{ comboBoxDrive.SelectedItem }");
+			fileCopy.Execute();
 		}
 		#endregion
 
