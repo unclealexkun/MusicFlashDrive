@@ -26,9 +26,9 @@ namespace MusicFlashDrive.FileOperation
 		/// </summary>
 		public DirectoryInfo Destination { get; private set; }
 		/// <summary>
-		/// Объект-заглушка.
+		/// Семафор.
 		/// </summary>
-		private object locked;
+		private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
 		#endregion
 
@@ -42,7 +42,7 @@ namespace MusicFlashDrive.FileOperation
 			for (int step = 0; step < steps; ++step)
 			{
 				var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-				Thread thread = new(() => Coping(processedFiles));
+				Thread thread = new(() => CopingAsync(processedFiles));
 				thread.IsBackground = true;
 				thread.Start();
 			}
@@ -55,14 +55,25 @@ namespace MusicFlashDrive.FileOperation
 		/// Копирование файлов.
 		/// </summary>
 		/// <param name="files">Копируемые файлы.</param>
-		private void Coping(IEnumerable<FileInfo> files)
+		private async void CopingAsync(IEnumerable<FileInfo> files)
 		{
-			lock (locked)
+			await semaphoreSlim.WaitAsync();
+			try
 			{
 				foreach (var file in files)
 				{
-					file.CopyTo(Destination.FullName + file.Name);
+					using (var sourceStream = File.Open(file.FullName, FileMode.Open))
+					{
+						using (var destinationStream = File.Create(Destination.FullName + file.Name))
+						{
+							await sourceStream.CopyToAsync(destinationStream);
+						}
+					}
 				}
+			}
+			finally
+			{
+				semaphoreSlim.Release();
 			}
 		}
 
@@ -79,7 +90,6 @@ namespace MusicFlashDrive.FileOperation
 
 			this.Source = new DirectoryInfo(source);
 			this.Destination = new DirectoryInfo(destination);
-			this.locked = new();
 		}
 
 		#endregion
