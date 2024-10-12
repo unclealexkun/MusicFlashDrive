@@ -25,6 +25,10 @@ namespace MusicFlashDrive.FileOperation
 		/// Целевая директория.
 		/// </summary>
 		public DirectoryInfo Destination { get; private set; }
+		/// <summary>
+		/// Объект-заглушка.
+		/// </summary>
+		private object locked;
 
 		#endregion
 
@@ -38,35 +42,28 @@ namespace MusicFlashDrive.FileOperation
 			for (int step = 0; step < steps; ++step)
 			{
 				var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-				Thread thread = new(() => CopingAsync(processedFiles));
+				Thread thread = new(() => Coping(processedFiles));
 				thread.IsBackground = true;
 				thread.Start();
 			}
 		}
-
-
-
 		#endregion
+
 		#region Методы
 
 		/// <summary>
-		/// Асинхронное копирование файлов.
+		/// Копирование файлов.
 		/// </summary>
 		/// <param name="files">Копируемые файлы.</param>
-		private async Task<Task> CopingAsync(IEnumerable<FileInfo> files)
+		private void Coping(IEnumerable<FileInfo> files)
 		{
-			foreach (var file in files)
+			lock (locked)
 			{
-				using (var sourceStream = File.Open(file.FullName, FileMode.Open))
+				foreach (var file in files)
 				{
-					using (var destinationStream = File.Create(Destination.FullName + file.Name))
-					{
-						await sourceStream.CopyToAsync(destinationStream);
-					}
+					file.CopyTo(Destination.FullName + file.Name);
 				}
 			}
-
-			return Task.CompletedTask;
 		}
 
 		#endregion
@@ -82,6 +79,7 @@ namespace MusicFlashDrive.FileOperation
 
 			this.Source = new DirectoryInfo(source);
 			this.Destination = new DirectoryInfo(destination);
+			this.locked = new();
 		}
 
 		#endregion
