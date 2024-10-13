@@ -28,7 +28,10 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			components = new System.ComponentModel.Container();
 			groupBoxFileOperation = new GroupBox();
+			labelFillDrive = new Label();
+			progressBarFillDrive = new ProgressBar();
 			buttonCopyFile = new Button();
 			comboBoxDrive = new ComboBox();
 			labelDrive = new Label();
@@ -36,12 +39,15 @@
 			textBoxPathSource = new TextBox();
 			labelPathSource = new Label();
 			labelHello = new Label();
+			timerDrive = new System.Windows.Forms.Timer(components);
 			groupBoxFileOperation.SuspendLayout();
 			SuspendLayout();
 			// 
 			// groupBoxFileOperation
 			// 
 			groupBoxFileOperation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			groupBoxFileOperation.Controls.Add(labelFillDrive);
+			groupBoxFileOperation.Controls.Add(progressBarFillDrive);
 			groupBoxFileOperation.Controls.Add(buttonCopyFile);
 			groupBoxFileOperation.Controls.Add(comboBoxDrive);
 			groupBoxFileOperation.Controls.Add(labelDrive);
@@ -55,6 +61,25 @@
 			groupBoxFileOperation.TabStop = false;
 			groupBoxFileOperation.Text = "Операция с файлами";
 			// 
+			// labelFillDrive
+			// 
+			labelFillDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			labelFillDrive.AutoSize = true;
+			labelFillDrive.BackColor = SystemColors.ControlLight;
+			labelFillDrive.Location = new Point(275, 84);
+			labelFillDrive.Name = "labelFillDrive";
+			labelFillDrive.Size = new Size(73, 15);
+			labelFillDrive.TabIndex = 7;
+			labelFillDrive.Text = "0 Byt  / 0 Byt";
+			// 
+			// progressBarFillDrive
+			// 
+			progressBarFillDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			progressBarFillDrive.Location = new Point(72, 81);
+			progressBarFillDrive.Name = "progressBarFillDrive";
+			progressBarFillDrive.Size = new Size(492, 23);
+			progressBarFillDrive.TabIndex = 6;
+			// 
 			// buttonCopyFile
 			// 
 			buttonCopyFile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -64,7 +89,7 @@
 			buttonCopyFile.TabIndex = 5;
 			buttonCopyFile.Text = "Копировать";
 			buttonCopyFile.UseVisualStyleBackColor = true;
-			buttonCopyFile.Click += this.buttonCopyFile_Click;
+			buttonCopyFile.Click += buttonCopyFile_Click;
 			// 
 			// comboBoxDrive
 			// 
@@ -73,6 +98,7 @@
 			comboBoxDrive.Name = "comboBoxDrive";
 			comboBoxDrive.Size = new Size(60, 23);
 			comboBoxDrive.TabIndex = 4;
+			comboBoxDrive.SelectedIndexChanged += comboBoxDrive_SelectedIndexChanged;
 			// 
 			// labelDrive
 			// 
@@ -122,6 +148,11 @@
 			labelHello.TabIndex = 1;
 			labelHello.Text = "Hello!";
 			// 
+			// timerDrive
+			// 
+			timerDrive.Interval = 5000;
+			timerDrive.Tick += comboBoxDrive_SelectedIndexChanged;
+			// 
 			// MainForm
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -147,5 +178,8 @@
 		private Label labelDrive;
 		private Label labelHello;
 		private Button buttonCopyFile;
+		private ProgressBar progressBarFillDrive;
+		private System.Windows.Forms.Timer timerDrive;
+		private Label labelFillDrive;
 	}
 }
