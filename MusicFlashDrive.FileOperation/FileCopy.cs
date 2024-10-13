@@ -1,4 +1,6 @@
 ﻿
+using System.Security.Cryptography;
+
 namespace MusicFlashDrive.FileOperation
 {
 	/// <summary>
@@ -12,6 +14,10 @@ namespace MusicFlashDrive.FileOperation
 		/// Фрагмент.
 		/// </summary>
 		private readonly int ChunkSize = 5;
+		/// <summary>
+		/// Поисковый паттерн.
+		/// </summary>
+		private readonly string searchPattern = "*.mp3";
 
 		#endregion
 
@@ -36,7 +42,7 @@ namespace MusicFlashDrive.FileOperation
 
 		public void Execute()
 		{
-			var files = Source.GetFiles("*.mp3", SearchOption.AllDirectories);
+			var files = Source.GetFiles(searchPattern, SearchOption.AllDirectories);
 			var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
 
 			for (int step = 0; step < steps; ++step)
@@ -62,6 +68,14 @@ namespace MusicFlashDrive.FileOperation
 			{
 				foreach (var file in files)
 				{
+					if (File.Exists(Destination.FullName + file.Name))
+					{
+						var sourceFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(file.FullName))).ToLowerInvariant();
+						var destinationFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(Destination.FullName + file.Name))).ToLowerInvariant();
+						if (sourceFile == destinationFile)
+							continue;
+					}
+
 					using (var sourceStream = File.Open(file.FullName, FileMode.Open))
 					{
 						using (var destinationStream = File.Create(Destination.FullName + file.Name))
