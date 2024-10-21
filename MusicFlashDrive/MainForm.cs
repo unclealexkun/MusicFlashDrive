@@ -19,7 +19,7 @@ namespace MusicFlashDrive
 
 		public void buttonCopyFile_Click(object sender, EventArgs e)
 		{
-			var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}");
+			var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new SimpleCopyMode());
 			fileCopy.Execute();
 		}
 

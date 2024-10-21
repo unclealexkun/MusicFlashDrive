@@ -17,7 +17,7 @@ namespace MusicFlashDrive.FileOperation
 		/// <summary>
 		/// Поисковый паттерн.
 		/// </summary>
-		private readonly string searchPattern = "*.mp3";
+		private readonly string SearchPattern = "*.mp3";
 
 		#endregion
 
@@ -32,6 +32,10 @@ namespace MusicFlashDrive.FileOperation
 		/// </summary>
 		public DirectoryInfo Destination { get; private set; }
 		/// <summary>
+		/// Режим копирования.
+		/// </summary>
+		private ICopyMode copyMode;
+		/// <summary>
 		/// Семафор.
 		/// </summary>
 		private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
@@ -42,7 +46,7 @@ namespace MusicFlashDrive.FileOperation
 
 		public void Execute()
 		{
-			var files = Source.GetFiles(searchPattern, SearchOption.AllDirectories);
+			var files = Source.GetFiles(SearchPattern, SearchOption.AllDirectories);
 			var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
 
 			for (int step = 0; step < steps; ++step)
@@ -68,17 +72,19 @@ namespace MusicFlashDrive.FileOperation
 			{
 				foreach (var file in files)
 				{
-					if (File.Exists(Destination.FullName + file.Name))
+					var destinationFileName = this.copyMode.GeneratePathDestinationFile(file.Name, Destination.FullName);
+
+					if (File.Exists(destinationFileName))
 					{
 						var sourceFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(file.FullName))).ToLowerInvariant();
-						var destinationFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(Destination.FullName + file.Name))).ToLowerInvariant();
+						var destinationFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(destinationFileName))).ToLowerInvariant();
 						if (sourceFile == destinationFile)
 							continue;
 					}
 
 					using (var sourceStream = File.Open(file.FullName, FileMode.Open))
 					{
-						using (var destinationStream = File.Create(Destination.FullName + file.Name))
+						using (var destinationStream = File.Create(destinationFileName))
 						{
 							await sourceStream.CopyToAsync(destinationStream);
 						}
@@ -95,7 +101,7 @@ namespace MusicFlashDrive.FileOperation
 
 		#region Конструктор
 
-		public FileCopy(string source, string destination) 
+		public FileCopy(string source, string destination, ICopyMode copyMode) 
 		{
 			if (!Path.Exists(source))
 				throw new DirectoryNotFoundException(source);
@@ -104,6 +110,7 @@ namespace MusicFlashDrive.FileOperation
 
 			this.Source = new DirectoryInfo(source);
 			this.Destination = new DirectoryInfo(destination);
+			this.copyMode = copyMode;
 		}
 
 		#endregion
