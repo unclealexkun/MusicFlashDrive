@@ -5,21 +5,14 @@
 	/// </summary>
 	public class SimpleCopyMode : ICopyMode
 	{
-		#region Поля и свойства
-
-		/// <summary>
-		/// Целевая папка.
-		/// </summary>
-		public string DestinationFolder { get; private set; }
-
-		#endregion
-
 		#region ICopyMode
 
-		public string GeneratePathDestinationFile(string sourceFile, string destinationFolder)
+		public string DestinationFolder { get; set; }
+
+		public string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder)
 		{
-			this.DestinationFolder = destinationFolder;
-			return destinationFolder + sourceFile;
+			this.DestinationFolder = destinationFolder.FullName;
+			return this.DestinationFolder + sourceFile.Name;
 		}
 
 		#endregion

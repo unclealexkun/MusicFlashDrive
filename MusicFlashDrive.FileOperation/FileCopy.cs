@@ -72,7 +72,7 @@ namespace MusicFlashDrive.FileOperation
 			{
 				foreach (var file in files)
 				{
-					var destinationFileName = this.copyMode.GeneratePathDestinationFile(file.Name, Destination.FullName);
+					var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
 
 					if (File.Exists(destinationFileName))
 					{
@@ -81,6 +81,9 @@ namespace MusicFlashDrive.FileOperation
 						if (sourceFile == destinationFile)
 							continue;
 					}
+
+					if (!Directory.Exists(this.copyMode.DestinationFolder))
+						Directory.CreateDirectory(this.copyMode.DestinationFolder);
 
 					using (var sourceStream = File.Open(file.FullName, FileMode.Open))
 					{
