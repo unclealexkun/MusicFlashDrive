@@ -1,5 +1,4 @@
-﻿
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
 namespace MusicFlashDrive.FileOperation
 {
@@ -24,6 +23,10 @@ namespace MusicFlashDrive.FileOperation
 		#region Поля и свойства
 
 		/// <summary>
+		/// Режим копирования.
+		/// </summary>
+		private ICopyMode copyMode;
+		/// <summary>
 		/// Директория источник.
 		/// </summary>
 		public DirectoryInfo Source { get; private set; }
@@ -32,9 +35,9 @@ namespace MusicFlashDrive.FileOperation
 		/// </summary>
 		public DirectoryInfo Destination { get; private set; }
 		/// <summary>
-		/// Режим копирования.
+		/// Статус копирования.
 		/// </summary>
-		private ICopyMode copyMode;
+		public CopyState CopyState { get; private set; }
 		/// <summary>
 		/// Семафор.
 		/// </summary>
@@ -75,12 +78,8 @@ namespace MusicFlashDrive.FileOperation
 					var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
 
 					if (File.Exists(destinationFileName))
-					{
-						var sourceFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(file.FullName))).ToLowerInvariant();
-						var destinationFile = Convert.ToHexString(SHA1.HashData(File.ReadAllBytes(destinationFileName))).ToLowerInvariant();
-						if (sourceFile == destinationFile)
+						if (HashComparison.Compare(SHA256.HashData(File.ReadAllBytes(file.FullName)), SHA256.HashData(File.ReadAllBytes(destinationFileName))))
 							continue;
-					}
 
 					if (!Directory.Exists(this.copyMode.DestinationFolder))
 						Directory.CreateDirectory(this.copyMode.DestinationFolder);
