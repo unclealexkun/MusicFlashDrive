@@ -1,4 +1,6 @@
-﻿namespace MusicFlashDrive.FileOperation
+﻿using System.Xml.Linq;
+
+namespace MusicFlashDrive.FileOperation
 {
 	/// <summary>
 	/// Простой режим копирования.
@@ -7,12 +9,13 @@
 	{
 		#region ICopyMode
 
-		public string DestinationFolder { get; set; }
-
 		public string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder)
 		{
-			this.DestinationFolder = destinationFolder.FullName;
-			return this.DestinationFolder + sourceFile.Name;
+			var result = Path.Combine(destinationFolder.FullName, sourceFile.Name);
+			if (string.IsNullOrEmpty(result) || string.IsNullOrWhiteSpace(result))
+				throw new NullReferenceException(nameof(result));
+			else
+				return result;
 		}
 
 		#endregion

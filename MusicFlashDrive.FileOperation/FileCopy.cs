@@ -25,7 +25,7 @@ namespace MusicFlashDrive.FileOperation
 		/// <summary>
 		/// Режим копирования.
 		/// </summary>
-		private ICopyMode copyMode;
+		private readonly ICopyMode copyMode;
 		/// <summary>
 		/// Директория источник.
 		/// </summary>
@@ -38,16 +38,16 @@ namespace MusicFlashDrive.FileOperation
 		/// Статус копирования.
 		/// </summary>
 		public CopyState CopyState { get; private set; }
-		/// <summary>
-		/// Семафор.
-		/// </summary>
-		private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        /// <summary>
+        /// Семафор для асинхронного копирования.
+        /// </summary>
+        private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
-		#endregion
+        #endregion
 
-		#region IFileCopy
+        #region IFileCopy
 
-		public void Execute()
+        public void Execute()
 		{
 			var files = Source.GetFiles(SearchPattern, SearchOption.AllDirectories);
 			var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
@@ -76,13 +76,13 @@ namespace MusicFlashDrive.FileOperation
 				foreach (var file in files)
 				{
 					var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
-
 					if (File.Exists(destinationFileName))
 						if (HashComparison.Compare(SHA256.HashData(File.ReadAllBytes(file.FullName)), SHA256.HashData(File.ReadAllBytes(destinationFileName))))
 							continue;
 
-					if (!Directory.Exists(this.copyMode.DestinationFolder))
-						Directory.CreateDirectory(this.copyMode.DestinationFolder);
+					var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
+                    if (!Directory.Exists(destinationDirectoryName) && !string.IsNullOrEmpty(destinationDirectoryName))
+                        Directory.CreateDirectory(destinationDirectoryName);
 
 					using (var sourceStream = File.Open(file.FullName, FileMode.Open))
 					{
