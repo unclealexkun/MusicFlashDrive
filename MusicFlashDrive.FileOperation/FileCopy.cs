@@ -55,8 +55,7 @@ namespace MusicFlashDrive.FileOperation
       for (int step = 0; step < steps; ++step)
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-        Task task = CopingAsync(processedFiles, token);
-        task.Start();
+        Task.Factory.StartNew(() => CopingAsync(processedFiles, token));
       }
     }
 
