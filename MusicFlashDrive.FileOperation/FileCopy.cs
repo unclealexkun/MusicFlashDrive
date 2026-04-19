@@ -55,9 +55,8 @@ namespace MusicFlashDrive.FileOperation
       for (int step = 0; step < steps; ++step)
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-        Thread thread = new(() => CopingAsync(processedFiles, token));
-        thread.IsBackground = true;
-        thread.Start();
+        Task task = CopingAsync(processedFiles, token);
+        task.Start();
       }
     }
 
@@ -70,16 +69,16 @@ namespace MusicFlashDrive.FileOperation
     /// </summary>
     /// <param name="files">Копируемые файлы.</param>
     /// <param name="token">Токен отмены операции.</param>
-    private async void CopingAsync(IEnumerable<FileInfo> files, CancellationToken token)
+    private async Task CopingAsync(IEnumerable<FileInfo> files, CancellationToken token)
     {
-      await semaphoreSlim.WaitAsync();
+      await semaphoreSlim.WaitAsync(token);
       try
       {
         foreach (var file in files)
         {
           var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
           if (File.Exists(destinationFileName))
-            if (HashComparison.Compare(SHA256.HashData(File.ReadAllBytes(file.FullName)), SHA256.HashData(File.ReadAllBytes(destinationFileName))))
+            if (HashComparison.Compare(file.FullName, destinationFileName))
               continue;
 
           var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);

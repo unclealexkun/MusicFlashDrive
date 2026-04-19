@@ -1,4 +1,6 @@
-﻿namespace MusicFlashDrive.FileOperation
+﻿using System.Security.Cryptography;
+
+namespace MusicFlashDrive.FileOperation
 {
   /// <summary>
   /// Сравнение хешей.
@@ -8,25 +10,24 @@
     /// <summary>
     /// Сравнить.
     /// </summary>
-    /// <param name="hashA">Хеш А.</param>
-    /// <param name="hashB">Хеш B.</param>
+    /// <param name="filePathA">Путь до файла А.</param>
+    /// <param name="filePathB">Путь до файла B.</param>
     /// <returns>True - если хеши эквивалентны, иначе - False.</returns>
-    public static bool Compare(byte[] hashA, byte[] hashB)
+    public static bool Compare(string filePathA, string filePathB)
     {
-      var result = false;
-
-      if (hashA.Length == hashB.Length)
+      using (var sha256 = SHA256.Create())
       {
-        result = true;
-        for (var index = 0; index < hashA.Length; index++)
-          if (hashA[index] != hashB[index])
+        using (var streamFileA = File.OpenRead(filePathA))
+        {
+          using (var streamFileB = File.OpenRead(filePathB))
           {
-            result = false;
-            break;
-          }
-      }
+            var hashFileA = sha256.ComputeHash(streamFileA);
+            var hashFileB = sha256.ComputeHash(streamFileB);
 
-      return result;
+            return CryptographicOperations.FixedTimeEquals(hashFileA, hashFileB);
+          }
+        }
+      }
     }
   }
 }
