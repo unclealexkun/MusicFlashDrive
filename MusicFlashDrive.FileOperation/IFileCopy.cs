@@ -1,13 +1,15 @@
 ﻿namespace MusicFlashDrive.FileOperation
 {
+  /// <summary>
+  /// Копирование файлов.
+  /// </summary>
+  public interface IFileCopy
+  {
     /// <summary>
-    /// Копирование файлов.
+    /// Выполнить.
     /// </summary>
-    public interface IFileCopy
-    {
-        /// <summary>
-        /// Выполнить.
-        /// </summary>
-        public void Execute();
-    }
+    /// <param name="progress">Информация о прогрессе копирования.</param>
+    /// <param name="token">Токен отмены операции.</param>
+    public void Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default);
+  }
 }

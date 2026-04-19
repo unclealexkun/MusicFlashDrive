@@ -1,16 +1,16 @@
 ﻿namespace MusicFlashDrive.FileOperation
 {
+  /// <summary>
+  /// Режим копирования.
+  /// </summary>
+  public interface ICopyMode
+  {
     /// <summary>
-    /// Режим копирования.
+    /// Сформировать путь сохранения целевого файла.
     /// </summary>
-    public interface ICopyMode
-    {
-        /// <summary>
-        /// Сформировать путь сохранения целевого файла.
-        /// </summary>
-        /// <param name="sourceFile">Файл источник.</param>
-        /// <param name="destinationFolder">Папка для целевых файлов.</param>
-        /// <returns></returns>
-        string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder);
-    }
+    /// <param name="sourceFile">Файл источник.</param>
+    /// <param name="destinationFolder">Папка для целевых файлов.</param>
+    /// <returns></returns>
+    string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder);
+  }
 }
