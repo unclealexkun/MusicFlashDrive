@@ -38,10 +38,6 @@ namespace MusicFlashDrive.FileOperation
     /// Статус копирования.
     /// </summary>
     public CopyState CopyState { get; private set; }
-    /// <summary>
-    /// Семафор для асинхронного копирования.
-    /// </summary>
-    private static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 
     #endregion
 
@@ -56,7 +52,8 @@ namespace MusicFlashDrive.FileOperation
       for (int step = 0; step < steps; ++step)
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-        Task.Factory.StartNew(() => CopingAsync(processedFiles, token)).Wait(token);
+
+        Task.Run(() => CopingAsync(processedFiles, token), token);
 
         processedFilesCount += processedFiles.Count();
         var copyProgressInfo = new CopyProgressInfo()
@@ -79,20 +76,19 @@ namespace MusicFlashDrive.FileOperation
     /// <param name="token">Токен отмены операции.</param>
     private async Task CopingAsync(IEnumerable<FileInfo> files, CancellationToken token)
     {
-      await semaphoreSlim.WaitAsync(token);
-      try
+      foreach (var file in files)
       {
-        foreach (var file in files)
+        var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
+        if (File.Exists(destinationFileName))
+          if (HashComparison.Compare(file.FullName, destinationFileName))
+            continue;
+
+        var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
+        if (!Directory.Exists(destinationDirectoryName) && !string.IsNullOrEmpty(destinationDirectoryName))
+          Directory.CreateDirectory(destinationDirectoryName);
+
+        try
         {
-          var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
-          if (File.Exists(destinationFileName))
-            if (HashComparison.Compare(file.FullName, destinationFileName))
-              continue;
-
-          var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
-          if (!Directory.Exists(destinationDirectoryName) && !string.IsNullOrEmpty(destinationDirectoryName))
-            Directory.CreateDirectory(destinationDirectoryName);
-
           int bufferSize = 8192;
           token.ThrowIfCancellationRequested();
           using (var sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: true))
@@ -103,10 +99,16 @@ namespace MusicFlashDrive.FileOperation
             }
           }
         }
-      }
-      finally
-      {
-        semaphoreSlim.Release();
+        catch (OperationCanceledException)
+        {
+          throw;
+        }
+        catch (IOException ex)
+        {
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+        }
       }
     }
 

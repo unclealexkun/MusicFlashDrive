@@ -11,8 +11,15 @@ namespace MusicFlashDrive.FileOperation
 
     public string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder)
     {
-      var artist = PathCorrector.RemoveIllegalCharInPath(TagLib.File.Create(sourceFile.FullName).GetTag(TagTypes.Id3v2).FirstAlbumArtist ?? "unknown");
-      var title = PathCorrector.RemoveIllegalCharInPath(TagLib.File.Create(sourceFile.FullName).GetTag(TagTypes.Id3v2).Title ?? "unknown");
+      var artist = string.Empty;
+      var title = string.Empty;
+
+      using (var tagFile = TagLib.File.Create(sourceFile.FullName))
+      {
+        var tag = tagFile.GetTag(TagTypes.Id3v2);
+        artist = PathCorrector.RemoveIllegalCharInPath(tag.FirstAlbumArtist ?? "unknown");
+        title = PathCorrector.RemoveIllegalCharInPath(tag.Title ?? "unknown");
+      }
 
       var result = Path.Combine(destinationFolder.FullName, artist, $"{title}{sourceFile.Extension}");
       if (string.IsNullOrEmpty(result) || string.IsNullOrWhiteSpace(result))

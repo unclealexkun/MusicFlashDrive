@@ -15,6 +15,12 @@ namespace MusicFlashDrive.FileOperation
     /// <returns>True - если хеши эквивалентны, иначе - False.</returns>
     public static bool Compare(string filePathA, string filePathB)
     {
+      var fileAInfo = new FileInfo(filePathA);
+      var fileBInfo = new FileInfo(filePathB);
+
+      if (fileAInfo.Length != fileBInfo.Length || fileAInfo.LastWriteTime != fileBInfo.LastWriteTime)
+        return false;
+
       using (var sha256 = SHA256.Create())
       {
         using (var streamFileA = File.OpenRead(filePathA))
