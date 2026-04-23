@@ -52,10 +52,19 @@ namespace MusicFlashDrive.FileOperation
       var files = Source.GetFiles(SearchPattern, SearchOption.AllDirectories);
       var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
 
+      int processedFilesCount = 0;
       for (int step = 0; step < steps; ++step)
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
-        Task.Factory.StartNew(() => CopingAsync(processedFiles, token));
+        Task.Factory.StartNew(() => CopingAsync(processedFiles, token)).Wait(token);
+
+        processedFilesCount += processedFiles.Count();
+        var copyProgressInfo = new CopyProgressInfo()
+        {
+          Value = $"Обработано {processedFilesCount} из {files.Length} файлов",
+          Progress = (int)Math.Round((double)(processedFilesCount * 100 / files.Length))
+        };
+        progress.Report(copyProgressInfo);
       }
     }
 

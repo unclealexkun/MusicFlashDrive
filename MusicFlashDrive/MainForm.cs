@@ -4,12 +4,6 @@ namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
-    #region Ñגמיסעגא
-
-
-
-    #endregion
-
     #region Ìועמהû
     public void buttonPathSource_Click(object sender, EventArgs e)
     {
@@ -25,8 +19,13 @@ namespace MusicFlashDrive
 
     public void buttonCopyFile_Click(object sender, EventArgs e)
     {
+      var progress = new Progress<CopyProgressInfo>(status => {
+        toolStripProgressBar.Value = status.Progress;
+        toolStripStatusLabel.Text = status.Value;
+        toolStripProgressBar.ProgressBar.Refresh();
+      });
       var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
-      fileCopy.Execute();
+      fileCopy.Execute(progress);
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
@@ -64,6 +63,7 @@ namespace MusicFlashDrive
     public MainForm()
     {
       InitializeComponent();
+      toolStripStatusLabel.Text = string.Empty;
       timerDrive.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
       var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
