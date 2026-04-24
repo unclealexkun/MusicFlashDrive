@@ -6,6 +6,9 @@ namespace MusicFlashDrive
   {
     #region Свойства
 
+    /// <summary>
+    /// Выбранный внешний носитель.
+    /// </summary>
     private DriveInfo drive { get; set; }
 
     #endregion
@@ -43,6 +46,9 @@ namespace MusicFlashDrive
       finally
       {
         buttonCopyFile.Enabled = true;
+        toolStripStatusLabel.Text = string.Empty;
+        toolStripProgressBar.Value = 0;
+        toolStripProgressBar.ProgressBar.Refresh();
       }
     }
 
