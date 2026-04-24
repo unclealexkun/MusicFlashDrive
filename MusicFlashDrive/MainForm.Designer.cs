@@ -28,7 +28,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-      components = new System.ComponentModel.Container();
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       groupBoxFileOperation = new GroupBox();
       labelFillDrive = new Label();
       progressBarFillDrive = new ProgressBar();
@@ -39,7 +39,6 @@
       textBoxPathSource = new TextBox();
       labelPathSource = new Label();
       labelHello = new Label();
-      timerDrive = new System.Windows.Forms.Timer(components);
       statusStrip = new StatusStrip();
       toolStripStatusOperation = new ToolStripStatusLabel();
       toolStripProgressBar = new ToolStripProgressBar();
@@ -153,11 +152,6 @@
       labelHello.TabIndex = 1;
       labelHello.Text = "Hello!";
       // 
-      // timerDrive
-      // 
-      timerDrive.Interval = 5000;
-      timerDrive.Tick += comboBoxDrive_SelectedIndexChanged;
-      // 
       // statusStrip
       // 
       statusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusOperation, toolStripProgressBar, toolStripStatusLabel });
@@ -192,6 +186,7 @@
       Controls.Add(statusStrip);
       Controls.Add(labelHello);
       Controls.Add(groupBoxFileOperation);
+      Icon = (Icon)resources.GetObject("$this.Icon");
       Name = "MainForm";
       Text = "Music Flash Drive";
       groupBoxFileOperation.ResumeLayout(false);
@@ -213,7 +208,6 @@
 		private Label labelHello;
 		private Button buttonCopyFile;
 		private ProgressBar progressBarFillDrive;
-		private System.Windows.Forms.Timer timerDrive;
 		private Label labelFillDrive;
     private StatusStrip statusStrip;
     private ToolStripStatusLabel toolStripStatusOperation;

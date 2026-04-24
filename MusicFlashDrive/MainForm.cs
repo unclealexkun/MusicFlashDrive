@@ -4,6 +4,12 @@ namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
+    #region Свойства
+
+    private DriveInfo drive { get; set; }
+
+    #endregion
+
     #region Методы
     public void buttonPathSource_Click(object sender, EventArgs e)
     {
@@ -27,6 +33,8 @@ namespace MusicFlashDrive
           toolStripProgressBar.Value = status.Progress;
           toolStripStatusLabel.Text = status.Value;
           toolStripProgressBar.ProgressBar.Refresh();
+
+          StatusFillDrive();
         });
 
         var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
@@ -40,14 +48,20 @@ namespace MusicFlashDrive
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
     {
-      var drive = DriveInfo.GetDrives().Where(drive => drive.IsReady
+      drive = DriveInfo.GetDrives().Where(drive => drive.IsReady
           && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}")
           .First();
+      StatusFillDrive();
+    }
 
+    /// <summary>
+    /// Состояние заполненности внешнего носителя.
+    /// </summary>
+    private void StatusFillDrive()
+    {
       progressBarFillDrive.Value = (int)Math.Round((double)((drive.TotalSize - drive.TotalFreeSpace) * 100 / drive.TotalSize));
       labelFillDrive.Text = $"{BytesToString(drive.TotalSize - drive.TotalFreeSpace)} / {BytesToString(drive.TotalSize)}";
       progressBarFillDrive.Refresh();
-      timerDrive.Enabled = true;
     }
 
     /// <summary>
@@ -72,11 +86,15 @@ namespace MusicFlashDrive
     {
       InitializeComponent();
       toolStripStatusLabel.Text = string.Empty;
-      timerDrive.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
+
       var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
       if (drives.Any())
+      {
         comboBoxDrive.Items.AddRange(drives.Select(drive => drive.Name).ToArray());
+        comboBoxDrive.SelectedIndex = 0;
+      }  
+
       if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPathCopy))
         textBoxPathSource.Text = Properties.Settings.Default.LastPathCopy;
     }
