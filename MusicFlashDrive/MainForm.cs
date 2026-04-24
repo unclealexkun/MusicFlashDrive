@@ -17,15 +17,25 @@ namespace MusicFlashDrive
       }
     }
 
-    public void buttonCopyFile_Click(object sender, EventArgs e)
+    public async void buttonCopyFile_Click(object sender, EventArgs e)
     {
-      var progress = new Progress<CopyProgressInfo>(status => {
-        toolStripProgressBar.Value = status.Progress;
-        toolStripStatusLabel.Text = status.Value;
-        toolStripProgressBar.ProgressBar.Refresh();
-      });
-      var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
-      fileCopy.Execute(progress);
+      try
+      {
+        buttonCopyFile.Enabled = false;
+
+        var progress = new Progress<CopyProgressInfo>(status => {
+          toolStripProgressBar.Value = status.Progress;
+          toolStripStatusLabel.Text = status.Value;
+          toolStripProgressBar.ProgressBar.Refresh();
+        });
+
+        var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
+        await fileCopy.Execute(progress);
+      }
+      finally
+      {
+        buttonCopyFile.Enabled = true;
+      }
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
@@ -34,8 +44,6 @@ namespace MusicFlashDrive
           && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}")
           .First();
 
-      progressBarFillDrive.Minimum = 0;
-      progressBarFillDrive.Maximum = 100;
       progressBarFillDrive.Value = (int)Math.Round((double)((drive.TotalSize - drive.TotalFreeSpace) * 100 / drive.TotalSize));
       labelFillDrive.Text = $"{BytesToString(drive.TotalSize - drive.TotalFreeSpace)} / {BytesToString(drive.TotalSize)}";
       progressBarFillDrive.Refresh();

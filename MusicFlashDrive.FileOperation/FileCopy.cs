@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-
-namespace MusicFlashDrive.FileOperation
+﻿namespace MusicFlashDrive.FileOperation
 {
   /// <summary>
   /// Копирование файлов.
@@ -43,7 +41,7 @@ namespace MusicFlashDrive.FileOperation
 
     #region IFileCopy
 
-    public void Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default)
+    public async Task Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default)
     {
       var files = Source.GetFiles(SearchPattern, SearchOption.AllDirectories);
       var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
@@ -53,7 +51,8 @@ namespace MusicFlashDrive.FileOperation
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
 
-        Task.Run(() => CopingAsync(processedFiles, token), token);
+        var task = Task.Run(() => CopingAsync(processedFiles, token), token);
+        await Task.WhenAll(task);
 
         processedFilesCount += processedFiles.Count();
         var copyProgressInfo = new CopyProgressInfo()
@@ -103,10 +102,10 @@ namespace MusicFlashDrive.FileOperation
         {
           throw;
         }
-        catch (IOException ex)
+        catch (IOException)
         {
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedAccessException)
         {
         }
       }

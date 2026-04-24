@@ -10,6 +10,7 @@
     /// </summary>
     /// <param name="progress">Информация о прогрессе копирования.</param>
     /// <param name="token">Токен отмены операции.</param>
-    public void Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default);
+    /// <returns>Возращаем Task для параллельной обработки.</returns>
+    public Task Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default);
   }
 }
