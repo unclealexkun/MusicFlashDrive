@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MusicFlashDrive.FileOperation
 {
@@ -14,7 +15,11 @@ namespace MusicFlashDrive.FileOperation
     /// <returns>Путь с исправлениями.</returns>
     public static string RemoveIllegalCharInPath(string path)
     {
-      Regex illegalInFileName = new Regex(@"[\\/:*?""<>|]");
+      var invalid = new StringBuilder();
+      invalid.Append(Path.GetInvalidFileNameChars());
+      invalid.Append(Path.GetInvalidPathChars());
+
+      Regex illegalInFileName = new Regex(invalid.ToString());
       return illegalInFileName.Replace(path, string.Empty);
     }
   }

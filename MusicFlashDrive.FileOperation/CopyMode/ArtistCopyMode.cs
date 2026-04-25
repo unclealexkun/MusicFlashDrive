@@ -23,7 +23,7 @@ namespace MusicFlashDrive.FileOperation
 
       var result = Path.Combine(destinationFolder.FullName, artist, $"{title}{sourceFile.Extension}");
       if (string.IsNullOrEmpty(result) || string.IsNullOrWhiteSpace(result))
-        throw new NullReferenceException(nameof(result));
+        throw new InvalidOperationException(nameof(result));
       else
         return result;
     }

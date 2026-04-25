@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace MusicFlashDrive.FileOperation
+﻿namespace MusicFlashDrive.FileOperation
 {
   /// <summary>
   /// Простой режим копирования.
@@ -13,7 +11,7 @@ namespace MusicFlashDrive.FileOperation
     {
       var result = Path.Combine(destinationFolder.FullName, sourceFile.Name);
       if (string.IsNullOrEmpty(result) || string.IsNullOrWhiteSpace(result))
-        throw new NullReferenceException(nameof(result));
+        throw new InvalidOperationException(nameof(result));
       else
         return result;
     }

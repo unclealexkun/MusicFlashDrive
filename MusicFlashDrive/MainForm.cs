@@ -68,9 +68,8 @@ namespace MusicFlashDrive
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
     {
-      drive = DriveInfo.GetDrives().Where(drive => drive.IsReady
-          && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}")
-          .First();
+      drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady
+          && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}") ?? throw new ArgumentNullException();
       StatusFillDrive();
     }
 
