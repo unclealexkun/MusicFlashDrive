@@ -4,13 +4,15 @@ namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
-    #region Свойства
-
+    #region Поля и Свойства
+    /// <summary>
+    /// Токен отмены.
+    /// </summary>
+    private CancellationTokenSource cancellationToken;
     /// <summary>
     /// Выбранный внешний носитель.
     /// </summary>
     private DriveInfo drive { get; set; }
-
     #endregion
 
     #region Методы
@@ -31,22 +33,37 @@ namespace MusicFlashDrive
       try
       {
         buttonCopyFile.Enabled = false;
+        buttonCancel.Enabled = true;
 
-        var progress = new Progress<CopyProgressInfo>(status => {
-          toolStripStatusLabel.Text = status.Value;
-          toolStripProgressBar.Value = status.Progress;
-          toolStripProgressBar.ProgressBar.Refresh();
+        using (cancellationToken = new CancellationTokenSource())
+        {
+          var progress = new Progress<CopyProgressInfo>(status =>
+          {
+            toolStripStatusLabel.Text = status.Value;
+            toolStripProgressBar.Value = status.Progress;
+            toolStripProgressBar.ProgressBar.Refresh();
 
-          StatusFillDrive();
-        });
+            StatusFillDrive();
+          });
 
-        var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
-        await fileCopy.Execute(progress);
+          var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
+          await fileCopy.Execute(progress);
+        }
+      }
+      catch (OperationCanceledException)
+      {
+        toolStripStatusLabel.Text = "Операция отменена";
       }
       finally
       {
         buttonCopyFile.Enabled = true;
+        buttonCancel.Enabled = false;
       }
+    }
+
+    private void buttonCancel_Click(object sender, EventArgs e)
+    {
+      cancellationToken?.CancelAsync();
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
@@ -89,6 +106,7 @@ namespace MusicFlashDrive
     {
       InitializeComponent();
       toolStripStatusLabel.Text = string.Empty;
+      buttonCancel.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
 
       var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
@@ -96,7 +114,7 @@ namespace MusicFlashDrive
       {
         comboBoxDrive.Items.AddRange(drives.Select(drive => drive.Name).ToArray());
         comboBoxDrive.SelectedIndex = 0;
-      }  
+      }
 
       if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPathCopy))
         textBoxPathSource.Text = Properties.Settings.Default.LastPathCopy;

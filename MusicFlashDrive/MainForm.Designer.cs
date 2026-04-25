@@ -43,6 +43,7 @@
       toolStripStatusOperation = new ToolStripStatusLabel();
       toolStripProgressBar = new ToolStripProgressBar();
       toolStripStatusLabel = new ToolStripStatusLabel();
+      buttonCancel = new Button();
       groupBoxFileOperation.SuspendLayout();
       statusStrip.SuspendLayout();
       SuspendLayout();
@@ -50,6 +51,7 @@
       // groupBoxFileOperation
       // 
       groupBoxFileOperation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      groupBoxFileOperation.Controls.Add(buttonCancel);
       groupBoxFileOperation.Controls.Add(labelFillDrive);
       groupBoxFileOperation.Controls.Add(progressBarFillDrive);
       groupBoxFileOperation.Controls.Add(buttonCopyFile);
@@ -178,6 +180,16 @@
       toolStripStatusLabel.Size = new Size(75, 17);
       toolStripStatusLabel.Text = "Обработано";
       // 
+      // buttonCancel
+      // 
+      buttonCancel.Location = new Point(381, 123);
+      buttonCancel.Name = "buttonCancel";
+      buttonCancel.Size = new Size(89, 23);
+      buttonCancel.TabIndex = 8;
+      buttonCancel.Text = "Отменить";
+      buttonCancel.UseVisualStyleBackColor = true;
+      buttonCancel.Click += buttonCancel_Click;
+      // 
       // MainForm
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
@@ -213,5 +225,6 @@
     private ToolStripStatusLabel toolStripStatusOperation;
     private ToolStripProgressBar toolStripProgressBar;
     private ToolStripStatusLabel toolStripStatusLabel;
+    private Button buttonCancel;
   }
 }
