@@ -30,6 +30,7 @@
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       groupBoxFileOperation = new GroupBox();
+      buttonCancel = new Button();
       labelFillDrive = new Label();
       progressBarFillDrive = new ProgressBar();
       buttonCopyFile = new Button();
@@ -43,7 +44,6 @@
       toolStripStatusOperation = new ToolStripStatusLabel();
       toolStripProgressBar = new ToolStripProgressBar();
       toolStripStatusLabel = new ToolStripStatusLabel();
-      buttonCancel = new Button();
       groupBoxFileOperation.SuspendLayout();
       statusStrip.SuspendLayout();
       SuspendLayout();
@@ -66,6 +66,17 @@
       groupBoxFileOperation.TabIndex = 0;
       groupBoxFileOperation.TabStop = false;
       groupBoxFileOperation.Text = "Операция с файлами";
+      // 
+      // buttonCancel
+      // 
+      buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+      buttonCancel.Location = new Point(381, 123);
+      buttonCancel.Name = "buttonCancel";
+      buttonCancel.Size = new Size(89, 23);
+      buttonCancel.TabIndex = 8;
+      buttonCancel.Text = "Отменить";
+      buttonCancel.UseVisualStyleBackColor = true;
+      buttonCancel.Click += buttonCancel_Click;
       // 
       // labelFillDrive
       // 
@@ -179,16 +190,6 @@
       toolStripStatusLabel.Name = "toolStripStatusLabel";
       toolStripStatusLabel.Size = new Size(75, 17);
       toolStripStatusLabel.Text = "Обработано";
-      // 
-      // buttonCancel
-      // 
-      buttonCancel.Location = new Point(381, 123);
-      buttonCancel.Name = "buttonCancel";
-      buttonCancel.Size = new Size(89, 23);
-      buttonCancel.TabIndex = 8;
-      buttonCancel.Text = "Отменить";
-      buttonCancel.UseVisualStyleBackColor = true;
-      buttonCancel.Click += buttonCancel_Click;
       // 
       // MainForm
       // 

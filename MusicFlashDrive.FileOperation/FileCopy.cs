@@ -56,6 +56,7 @@
 
       for (int step = 0; step < steps; ++step)
       {
+        token.ThrowIfCancellationRequested();
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
 
         var task = Task.Run(() => CopingAsync(processedFiles, token), token);

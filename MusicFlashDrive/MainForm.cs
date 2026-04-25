@@ -1,21 +1,21 @@
-using MusicFlashDrive.FileOperation;
+п»їusing MusicFlashDrive.FileOperation;
 
 namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
-    #region Поля и Свойства
+    #region РџРѕР»СЏ Рё РЎРІРѕР№СЃС‚РІР°
     /// <summary>
-    /// Токен отмены.
+    /// РўРѕРєРµРЅ РѕС‚РјРµРЅС‹.
     /// </summary>
     private CancellationTokenSource cancellationToken;
     /// <summary>
-    /// Выбранный внешний носитель.
+    /// Р’С‹Р±СЂР°РЅРЅС‹Р№ РІРЅРµС€РЅРёР№ РЅРѕСЃРёС‚РµР»СЊ.
     /// </summary>
     private DriveInfo drive { get; set; }
     #endregion
 
-    #region Методы
+    #region РњРµС‚РѕРґС‹
     public void buttonPathSource_Click(object sender, EventArgs e)
     {
       var openFileDialog = new FolderBrowserDialog();
@@ -47,12 +47,12 @@ namespace MusicFlashDrive
           });
 
           var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
-          await fileCopy.Execute(progress);
+          await fileCopy.Execute(progress, cancellationToken.Token);
         }
       }
       catch (OperationCanceledException)
       {
-        toolStripStatusLabel.Text = "Операция отменена";
+        toolStripStatusLabel.Text = $"РћРїРµСЂР°С†РёСЏ РѕС‚РјРµРЅРµРЅР°";
       }
       finally
       {
@@ -63,7 +63,7 @@ namespace MusicFlashDrive
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
-      cancellationToken?.CancelAsync();
+      cancellationToken?.Cancel();
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
@@ -75,7 +75,7 @@ namespace MusicFlashDrive
     }
 
     /// <summary>
-    /// Состояние заполненности внешнего носителя.
+    /// РЎРѕСЃС‚РѕСЏРЅРёРµ Р·Р°РїРѕР»РЅРµРЅРЅРѕСЃС‚Рё РІРЅРµС€РЅРµРіРѕ РЅРѕСЃРёС‚РµР»СЏ.
     /// </summary>
     private void StatusFillDrive()
     {
@@ -85,10 +85,10 @@ namespace MusicFlashDrive
     }
 
     /// <summary>
-    /// Вывод данных о размере.
+    /// Р’С‹РІРѕРґ РґР°РЅРЅС‹С… Рѕ СЂР°Р·РјРµСЂРµ.
     /// </summary>
-    /// <param name="byteCount">Размер файла.</param>
-    /// <returns>Информация о рзмере.</returns>
+    /// <param name="byteCount">Р Р°Р·РјРµСЂ С„Р°Р№Р»Р°.</param>
+    /// <returns>РРЅС„РѕСЂРјР°С†РёСЏ Рѕ СЂР·РјРµСЂРµ.</returns>
     private static string BytesToString(long byteCount)
     {
       string[] suf = { "Byt", "KB", "MB", "GB", "TB", "PB", "EB" };
@@ -101,7 +101,7 @@ namespace MusicFlashDrive
     }
     #endregion
 
-    #region Конструктор
+    #region РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     public MainForm()
     {
       InitializeComponent();
