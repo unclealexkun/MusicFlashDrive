@@ -52,7 +52,7 @@ namespace MusicFlashDrive
       }
       catch (OperationCanceledException)
       {
-        toolStripStatusLabel.Text = $"Операция отменена";
+        toolStripStatusLabel.Text = "Операция отменена";
       }
       finally
       {
