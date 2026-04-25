@@ -33,8 +33,8 @@ namespace MusicFlashDrive
         buttonCopyFile.Enabled = false;
 
         var progress = new Progress<CopyProgressInfo>(status => {
-          toolStripProgressBar.Value = status.Progress;
           toolStripStatusLabel.Text = status.Value;
+          toolStripProgressBar.Value = status.Progress;
           toolStripProgressBar.ProgressBar.Refresh();
 
           StatusFillDrive();
@@ -46,9 +46,6 @@ namespace MusicFlashDrive
       finally
       {
         buttonCopyFile.Enabled = true;
-        toolStripStatusLabel.Text = string.Empty;
-        toolStripProgressBar.Value = 0;
-        toolStripProgressBar.ProgressBar.Refresh();
       }
     }
 

@@ -47,6 +47,13 @@
       var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
 
       int processedFilesCount = 0;
+      var copyProgressInfo = new CopyProgressInfo()
+      {
+        Value = $"Обработано {processedFilesCount} из {files.Length} файлов",
+        Progress = 0
+      };
+      progress.Report(copyProgressInfo);
+
       for (int step = 0; step < steps; ++step)
       {
         var processedFiles = files.Skip(step * ChunkSize).Take(ChunkSize);
@@ -55,13 +62,21 @@
         await Task.WhenAll(task);
 
         processedFilesCount += processedFiles.Count();
-        var copyProgressInfo = new CopyProgressInfo()
+        copyProgressInfo = new CopyProgressInfo()
         {
           Value = $"Обработано {processedFilesCount} из {files.Length} файлов",
           Progress = (int)Math.Round((double)(processedFilesCount * 100 / files.Length))
         };
         progress.Report(copyProgressInfo);
       }
+
+      processedFilesCount = 0;
+      copyProgressInfo = new CopyProgressInfo()
+      {
+        Value = $"Обработано",
+        Progress = 0
+      };
+      progress.Report(copyProgressInfo);
     }
 
     #endregion
