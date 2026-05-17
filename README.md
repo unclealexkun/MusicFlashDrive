@@ -97,7 +97,3 @@ dotnet run --project src/MusicFlashDrive/MusicFlashDrive.csproj
 ## 📝 Лицензия
 
 MIT
-
-## 🤝 Вклад
-
-Проект открыт для улучшений. Создавайте pull request'ы или открывайте issues для предложений.
