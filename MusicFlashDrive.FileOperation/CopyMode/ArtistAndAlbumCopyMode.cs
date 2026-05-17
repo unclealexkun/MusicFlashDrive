@@ -19,7 +19,7 @@ namespace MusicFlashDrive.FileOperation
       using (var tagFile = TagLib.File.Create(sourceFile.FullName))
       {
         var tag = tagFile.GetTag(TagTypes.Id3v2);
-        artist = PathCorrector.RemoveIllegalCharInPath(tag.FirstAlbumArtist ?? "unknown");
+        artist = PathCorrector.RemoveIllegalCharInPath(string.Join(',', tag.Performers) ?? "unknown");
         album = PathCorrector.RemoveIllegalCharInPath(tag.Album ?? "unknown");
         title = PathCorrector.RemoveIllegalCharInPath(tag.Title ?? "unknown");
         track = tag.Track;
