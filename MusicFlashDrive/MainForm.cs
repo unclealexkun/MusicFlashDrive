@@ -13,6 +13,15 @@ namespace MusicFlashDrive
     /// Выбранный внешний носитель.
     /// </summary>
     private DriveInfo drive { get; set; }
+    /// <summary>
+    /// Выбранный режим копирования.
+    /// </summary>
+    private ICopyMode CopyMode => comboBoxCopyMode.SelectedItem switch
+    {
+      "Артист и Альбом" => new ArtistAndAlbumCopyMode(),
+      "Артист" => new ArtistCopyMode(),
+      _ => new SimpleCopyMode()
+    };
     #endregion
 
     #region Методы
@@ -46,7 +55,7 @@ namespace MusicFlashDrive
             StatusFillDrive();
           });
 
-          var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", new ArtistAndAlbumCopyMode());
+          var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", CopyMode);
           await fileCopy.Execute(progress, cancellationToken.Token);
         }
       }
@@ -107,6 +116,10 @@ namespace MusicFlashDrive
       toolStripStatusLabel.Text = string.Empty;
       buttonCancel.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
+
+      // Инициализация ComboBox режимов копирования
+      comboBoxCopyMode.Items.AddRange(new[] { "Простой режим", "Артист", "Артист и Альбом" });
+      comboBoxCopyMode.SelectedIndex = 0;
 
       var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
       if (drives.Any())

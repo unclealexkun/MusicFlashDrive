@@ -30,6 +30,8 @@
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       groupBoxFileOperation = new GroupBox();
+      comboBoxCopyMode = new ComboBox();
+      labelCopyMode = new Label();
       buttonCancel = new Button();
       labelFillDrive = new Label();
       progressBarFillDrive = new ProgressBar();
@@ -51,6 +53,8 @@
       // groupBoxFileOperation
       // 
       groupBoxFileOperation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      groupBoxFileOperation.Controls.Add(comboBoxCopyMode);
+      groupBoxFileOperation.Controls.Add(labelCopyMode);
       groupBoxFileOperation.Controls.Add(buttonCancel);
       groupBoxFileOperation.Controls.Add(labelFillDrive);
       groupBoxFileOperation.Controls.Add(progressBarFillDrive);
@@ -62,11 +66,28 @@
       groupBoxFileOperation.Controls.Add(labelPathSource);
       groupBoxFileOperation.Location = new Point(12, 44);
       groupBoxFileOperation.Name = "groupBoxFileOperation";
-      groupBoxFileOperation.Size = new Size(571, 161);
+      groupBoxFileOperation.Size = new Size(571, 190);
       groupBoxFileOperation.TabIndex = 0;
       groupBoxFileOperation.TabStop = false;
       groupBoxFileOperation.Text = "Операция с файлами";
       // 
+      // comboBoxCopyMode
+      // 
+      comboBoxCopyMode.DropDownStyle = ComboBoxStyle.DropDownList;
+      comboBoxCopyMode.FormattingEnabled = true;
+      comboBoxCopyMode.Location = new Point(6, 135);
+      comboBoxCopyMode.Name = "comboBoxCopyMode";
+      comboBoxCopyMode.Size = new Size(180, 23);
+      comboBoxCopyMode.TabIndex = 12;
+      // 
+      // labelCopyMode
+      // 
+      labelCopyMode.AutoSize = true;
+      labelCopyMode.Location = new Point(6, 117);
+      labelCopyMode.Name = "labelCopyMode";
+      labelCopyMode.Size = new Size(108, 15);
+      labelCopyMode.TabIndex = 13;
+      labelCopyMode.Text = "Режим копирования";
       // buttonCancel
       // 
       buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -227,5 +248,7 @@
     private ToolStripProgressBar toolStripProgressBar;
     private ToolStripStatusLabel toolStripStatusLabel;
     private Button buttonCancel;
+    private ComboBox comboBoxCopyMode;
+    private Label labelCopyMode;
   }
 }
