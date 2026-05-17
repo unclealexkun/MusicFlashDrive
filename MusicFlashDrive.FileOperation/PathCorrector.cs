@@ -1,26 +1,36 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 
 namespace MusicFlashDrive.FileOperation
 {
   /// <summary>
-  /// Корректоривка путей.
+  /// Корректировка путей.
   /// </summary>
   internal class PathCorrector
   {
+    // Кэшируем недопустимые символы для производительности.
+    private static readonly char[] InvalidChars = Path.GetInvalidFileNameChars();
+
     /// <summary>
-    /// Удалять некорректные символы из пути.
+    /// Удаляет некорректные символы из пути (имени файла или папки).
     /// </summary>
-    /// <param name="path">Путь, который нужно откоректировать.</param>
+    /// <param name="path">Путь, который нужно откорректировать.</param>
     /// <returns>Путь с исправлениями.</returns>
     public static string RemoveIllegalCharInPath(string path)
     {
-      var invalid = new StringBuilder();
-      invalid.Append(Path.GetInvalidFileNameChars());
-      invalid.Append(Path.GetInvalidPathChars());
+      if (string.IsNullOrEmpty(path))
+        return path;
 
-      Regex illegalInFileName = new Regex(invalid.ToString());
-      return illegalInFileName.Replace(path, string.Empty);
+      var result = new StringBuilder(path.Length);
+
+      foreach (char c in path)
+      {
+        if (Array.IndexOf(InvalidChars, c) == -1)
+        {
+          result.Append(c);
+        }
+      }
+
+      return result.ToString();
     }
   }
 }
