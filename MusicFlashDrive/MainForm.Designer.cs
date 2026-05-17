@@ -66,32 +66,35 @@
       groupBoxFileOperation.Controls.Add(labelPathSource);
       groupBoxFileOperation.Location = new Point(12, 44);
       groupBoxFileOperation.Name = "groupBoxFileOperation";
-      groupBoxFileOperation.Size = new Size(571, 190);
+      groupBoxFileOperation.Size = new Size(575, 220);
       groupBoxFileOperation.TabIndex = 0;
       groupBoxFileOperation.TabStop = false;
       groupBoxFileOperation.Text = "Операция с файлами";
       // 
       // comboBoxCopyMode
       // 
+      comboBoxCopyMode.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
       comboBoxCopyMode.DropDownStyle = ComboBoxStyle.DropDownList;
       comboBoxCopyMode.FormattingEnabled = true;
-      comboBoxCopyMode.Location = new Point(6, 135);
+      comboBoxCopyMode.Location = new Point(385, 152);
       comboBoxCopyMode.Name = "comboBoxCopyMode";
-      comboBoxCopyMode.Size = new Size(180, 23);
+      comboBoxCopyMode.Size = new Size(184, 23);
       comboBoxCopyMode.TabIndex = 12;
       // 
       // labelCopyMode
       // 
+      labelCopyMode.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
       labelCopyMode.AutoSize = true;
-      labelCopyMode.Location = new Point(6, 117);
+      labelCopyMode.Location = new Point(385, 125);
       labelCopyMode.Name = "labelCopyMode";
-      labelCopyMode.Size = new Size(108, 15);
+      labelCopyMode.Size = new Size(121, 15);
       labelCopyMode.TabIndex = 13;
       labelCopyMode.Text = "Режим копирования";
+      // 
       // buttonCancel
       // 
       buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-      buttonCancel.Location = new Point(381, 123);
+      buttonCancel.Location = new Point(385, 181);
       buttonCancel.Name = "buttonCancel";
       buttonCancel.Size = new Size(89, 23);
       buttonCancel.TabIndex = 8;
@@ -115,13 +118,13 @@
       progressBarFillDrive.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       progressBarFillDrive.Location = new Point(72, 81);
       progressBarFillDrive.Name = "progressBarFillDrive";
-      progressBarFillDrive.Size = new Size(493, 23);
+      progressBarFillDrive.Size = new Size(497, 23);
       progressBarFillDrive.TabIndex = 6;
       // 
       // buttonCopyFile
       // 
       buttonCopyFile.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-      buttonCopyFile.Location = new Point(476, 123);
+      buttonCopyFile.Location = new Point(480, 181);
       buttonCopyFile.Name = "buttonCopyFile";
       buttonCopyFile.Size = new Size(89, 23);
       buttonCopyFile.TabIndex = 5;
@@ -151,7 +154,7 @@
       // buttonPathSource
       // 
       buttonPathSource.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      buttonPathSource.Location = new Point(524, 37);
+      buttonPathSource.Location = new Point(528, 37);
       buttonPathSource.Name = "buttonPathSource";
       buttonPathSource.Size = new Size(41, 23);
       buttonPathSource.TabIndex = 2;
@@ -164,7 +167,7 @@
       textBoxPathSource.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       textBoxPathSource.Location = new Point(6, 37);
       textBoxPathSource.Name = "textBoxPathSource";
-      textBoxPathSource.Size = new Size(506, 23);
+      textBoxPathSource.Size = new Size(510, 23);
       textBoxPathSource.TabIndex = 1;
       // 
       // labelPathSource
@@ -189,9 +192,9 @@
       // statusStrip
       // 
       statusStrip.Items.AddRange(new ToolStripItem[] { toolStripStatusOperation, toolStripProgressBar, toolStripStatusLabel });
-      statusStrip.Location = new Point(0, 235);
+      statusStrip.Location = new Point(0, 265);
       statusStrip.Name = "statusStrip";
-      statusStrip.Size = new Size(595, 22);
+      statusStrip.Size = new Size(599, 22);
       statusStrip.TabIndex = 2;
       statusStrip.Text = "statusStripInfo";
       // 
@@ -216,7 +219,7 @@
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(595, 257);
+      ClientSize = new Size(599, 287);
       Controls.Add(statusStrip);
       Controls.Add(labelHello);
       Controls.Add(groupBoxFileOperation);

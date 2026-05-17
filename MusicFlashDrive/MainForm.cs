@@ -117,7 +117,6 @@ namespace MusicFlashDrive
       buttonCancel.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
 
-      // Инициализация ComboBox режимов копирования
       comboBoxCopyMode.Items.AddRange(new[] { "Простой режим", "Артист", "Артист и Альбом" });
       comboBoxCopyMode.SelectedIndex = 0;
 
