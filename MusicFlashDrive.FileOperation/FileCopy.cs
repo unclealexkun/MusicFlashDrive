@@ -93,7 +93,7 @@
     {
       foreach (var file in files)
       {
-        var destinationFileName = this.copyMode.GeneratePathDestinationFile(file, this.Destination);
+        var destinationFileName = this.copyMode.GeneratePathDestinationFile(this.Source, file, this.Destination);
         if (File.Exists(destinationFileName))
           if (HashComparison.Compare(file.FullName, destinationFileName))
             continue;

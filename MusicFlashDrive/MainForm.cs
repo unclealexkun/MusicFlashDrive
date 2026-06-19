@@ -20,7 +20,8 @@ namespace MusicFlashDrive
     {
       "Артист и Альбом" => new ArtistAndAlbumCopyMode(),
       "Артист" => new ArtistCopyMode(),
-      _ => new SimpleCopyMode()
+      "Простой режим" => new SimpleCopyMode(),
+      _ => new AsIsCopyMode()
     };
     #endregion
 
@@ -117,7 +118,7 @@ namespace MusicFlashDrive
       buttonCancel.Enabled = false;
       labelHello.Text = $"Hello, {Environment.UserName}!";
 
-      comboBoxCopyMode.Items.AddRange(new[] { "Простой режим", "Артист", "Артист и Альбом" });
+      comboBoxCopyMode.Items.AddRange(new[] { "Как есть", "Простой режим", "Артист", "Артист и Альбом" });
       comboBoxCopyMode.SelectedIndex = 0;
 
       var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);

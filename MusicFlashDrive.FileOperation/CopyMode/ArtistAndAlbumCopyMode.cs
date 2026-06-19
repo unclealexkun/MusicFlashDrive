@@ -9,7 +9,7 @@ namespace MusicFlashDrive.FileOperation
   {
     #region ICopyMode
 
-    public string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder)
+    public string GeneratePathDestinationFile(DirectoryInfo sourceFolder, FileInfo sourceFile, DirectoryInfo destinationFolder)
     {
       var artist = string.Empty;
       var album = string.Empty;

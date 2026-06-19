@@ -8,9 +8,10 @@
     /// <summary>
     /// Сформировать путь сохранения целевого файла.
     /// </summary>
+    /// <param name="sourceBaseFolder">Базовая папка источник файлов.</param>
     /// <param name="sourceFile">Файл источник.</param>
     /// <param name="destinationFolder">Папка для целевых файлов.</param>
     /// <returns></returns>
-    string GeneratePathDestinationFile(FileInfo sourceFile, DirectoryInfo destinationFolder);
+    string GeneratePathDestinationFile(DirectoryInfo sourceFolder, FileInfo sourceFile, DirectoryInfo destinationFolder);
   }
 }
