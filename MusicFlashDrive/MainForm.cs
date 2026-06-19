@@ -76,6 +76,11 @@ namespace MusicFlashDrive
       cancellationToken?.Cancel();
     }
 
+    private void buttonFillFolder_Click(object sender, EventArgs e)
+    {
+
+    }
+
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
     {
       drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady

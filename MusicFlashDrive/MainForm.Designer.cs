@@ -30,6 +30,8 @@
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
       groupBoxFileOperation = new GroupBox();
+      buttonFillFolder = new Button();
+      labelFillFolder = new Label();
       comboBoxCopyMode = new ComboBox();
       labelCopyMode = new Label();
       buttonCancel = new Button();
@@ -53,6 +55,8 @@
       // groupBoxFileOperation
       // 
       groupBoxFileOperation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+      groupBoxFileOperation.Controls.Add(buttonFillFolder);
+      groupBoxFileOperation.Controls.Add(labelFillFolder);
       groupBoxFileOperation.Controls.Add(comboBoxCopyMode);
       groupBoxFileOperation.Controls.Add(labelCopyMode);
       groupBoxFileOperation.Controls.Add(buttonCancel);
@@ -70,6 +74,25 @@
       groupBoxFileOperation.TabIndex = 0;
       groupBoxFileOperation.TabStop = false;
       groupBoxFileOperation.Text = "Операция с файлами";
+      // 
+      // buttonFillFolder
+      // 
+      buttonFillFolder.Location = new Point(90, 181);
+      buttonFillFolder.Name = "buttonFillFolder";
+      buttonFillFolder.Size = new Size(89, 23);
+      buttonFillFolder.TabIndex = 15;
+      buttonFillFolder.Text = "Заполнить";
+      buttonFillFolder.UseVisualStyleBackColor = true;
+      buttonFillFolder.Click += buttonFillFolder_Click;
+      // 
+      // labelFillFolder
+      // 
+      labelFillFolder.AutoSize = true;
+      labelFillFolder.Location = new Point(23, 125);
+      labelFillFolder.Name = "labelFillFolder";
+      labelFillFolder.Size = new Size(156, 15);
+      labelFillFolder.TabIndex = 14;
+      labelFillFolder.Text = "Заполнить папку источник";
       // 
       // comboBoxCopyMode
       // 
@@ -253,5 +276,7 @@
     private Button buttonCancel;
     private ComboBox comboBoxCopyMode;
     private Label labelCopyMode;
+    private Button buttonFillFolder;
+    private Label labelFillFolder;
   }
 }
