@@ -104,7 +104,7 @@
 
         try
         {
-          int bufferSize = 8192;
+          int bufferSize = 1024;
           token.ThrowIfCancellationRequested();
           using (var sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: true))
           {
