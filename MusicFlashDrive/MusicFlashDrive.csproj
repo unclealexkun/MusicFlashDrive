@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MusicFlashDrive.Downloader\MusicFlashDrive.Downloader.csproj" />
     <ProjectReference Include="..\MusicFlashDrive.FileOperation\MusicFlashDrive.FileOperation.csproj" />
   </ItemGroup>
 
