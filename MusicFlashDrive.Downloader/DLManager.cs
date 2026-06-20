@@ -1,6 +1,6 @@
 ﻿namespace MusicFlashDrive.Downloader
 {
-  public class Class1
+  public class DLManager
   {
 
   }

@@ -1,4 +1,5 @@
 ﻿using MusicFlashDrive.FileOperation;
+using MusicFlashDrive.Downloader;
 
 namespace MusicFlashDrive
 {
@@ -78,7 +79,8 @@ namespace MusicFlashDrive
 
     private void buttonFillFolder_Click(object sender, EventArgs e)
     {
-
+      var browser = new BrowserForm();
+      browser.ShowDialog();
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
