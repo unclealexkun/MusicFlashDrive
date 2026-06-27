@@ -1,5 +1,4 @@
 ﻿using MusicFlashDrive.FileOperation;
-using MusicFlashDrive.Downloader;
 
 namespace MusicFlashDrive
 {
@@ -9,11 +8,11 @@ namespace MusicFlashDrive
     /// <summary>
     /// Токен отмены.
     /// </summary>
-    private CancellationTokenSource cancellationToken;
+    private CancellationTokenSource cancellationToken = new();
     /// <summary>
     /// Выбранный внешний носитель.
     /// </summary>
-    private DriveInfo drive { get; set; }
+    private DriveInfo Drive { get; set; }
     /// <summary>
     /// Выбранный режим копирования.
     /// </summary>
@@ -79,13 +78,13 @@ namespace MusicFlashDrive
 
     private void buttonFillFolder_Click(object sender, EventArgs e)
     {
-      var browser = new BrowserForm();
+      var browser = new BrowserForm(textBoxPathSource.Text);
       browser.ShowDialog();
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
     {
-      drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady
+      Drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady
           && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}") ?? throw new ArgumentNullException();
       StatusFillDrive();
     }
@@ -95,8 +94,8 @@ namespace MusicFlashDrive
     /// </summary>
     private void StatusFillDrive()
     {
-      progressBarFillDrive.Value = (int)Math.Round((double)((drive.TotalSize - drive.TotalFreeSpace) * 100 / drive.TotalSize));
-      labelFillDrive.Text = $"{BytesToString(drive.TotalSize - drive.TotalFreeSpace)} / {BytesToString(drive.TotalSize)}";
+      progressBarFillDrive.Value = (int)Math.Round((double)((Drive.TotalSize - Drive.TotalFreeSpace) * 100 / Drive.TotalSize));
+      labelFillDrive.Text = $"{BytesToString(Drive.TotalSize - Drive.TotalFreeSpace)} / {BytesToString(Drive.TotalSize)}";
       progressBarFillDrive.Refresh();
     }
 
