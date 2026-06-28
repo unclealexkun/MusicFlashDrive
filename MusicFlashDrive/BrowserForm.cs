@@ -1,6 +1,6 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using MusicFlashDrive.Downloader;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace MusicFlashDrive
 {
@@ -91,58 +91,66 @@ namespace MusicFlashDrive
     private async Task<List<SongData>?> ExtractTracksAsync()
     {
       string js = @"
-        (function() {
-            const tracks = [];
-            const trackLinks = document.querySelectorAll('a[href*=""/album/""][href*=""/track/""]');
-    
-    trackLinks.forEach(link => {
-        // 1. Название трека
-        const title = link.textContent?.trim() || '';
-        const trackUrl = link.href;
+    (function() {
+        const tracks = [];
+        const trackLinks = document.querySelectorAll('a[href*=""/album/""][href*=""/track/""]');
         
-        // 2. Исполнитель: ищем ссылку на /artist/ в том же ""мета-контейнере""
-        // Из вашего лога видно, что исполнитель лежит в sibling-элементе того же родителя, что и ссылка на трек
-        let metaContainer = link.closest('.Meta_metaContainer__7i2dp') || 
-                           link.parentElement?.parentElement?.parentElement;
-        
-        let artist = '';
-        if (metaContainer) {
-            const artistLink = metaContainer.querySelector('a[href*=""/artist/""]');
-            artist = artistLink?.textContent?.trim() || '';
-        }
-        
-        // 3. Общий контейнер трека (для обложки и длительности)
-        // Поднимаемся вверх от ссылки, пока не найдём блок с картинкой и временем
-        let commonContainer = link.parentElement;
-        for (let i = 0; i < 10 && commonContainer; i++) {
-            if (commonContainer.querySelector('img') && 
-                Array.from(commonContainer.querySelectorAll('*')).some(el => /^\d{1,2}:\d{2}$/.test(el.textContent?.trim() || ''))) {
-                break;
+        trackLinks.forEach(link => {
+            const title = link.textContent?.trim() || '';
+            const trackUrl = link.href;
+            
+            let artist = '';
+            let current = link.parentElement;
+            for (let i = 0; i < 5 && current; i++) {
+                const artistLink = current.querySelector('a[href*=""/artist/""]');
+                if (artistLink) {
+                    artist = artistLink.textContent?.trim() || '';
+                    break;
+                }
+                current = current.parentElement;
             }
-            commonContainer = commonContainer.parentElement;
-        }
+            
+            let commonContainer = link.parentElement;
+            let coverUrl = '';
+            let duration = '';
+            
+            for (let i = 0; i < 10 && commonContainer; i++) {
+                const img = commonContainer.querySelector('img');
+                if (img && !coverUrl) {
+                    coverUrl = img.src || img.getAttribute('data-src') || '';
+                }
+                
+                const allElements = commonContainer.querySelectorAll('*');
+                for (const el of allElements) {
+                    const text = el.textContent?.trim();
+                    if (/^\d{1,2}:\d{2}$/.test(text)) {
+                        duration = text;
+                        break;
+                    }
+                }
+                
+                if (coverUrl && duration) break;
+                commonContainer = commonContainer.parentElement;
+            }
+            
+            if (title) {
+                tracks.push({ artist, title, album: '', coverUrl, trackUrl });
+            }
+        });
         
-        // 4. Обложка
-        const coverImg = commonContainer?.querySelector('img');
-        const coverUrl = coverImg?.src || coverImg?.getAttribute('data-src') || '';
-        
-        if (title) {
-            tracks.push({
-                title,
-                artist,
-                album: '',
-                coverUrl,
-                trackUrl
-            });
-        }
-    });
-    
-    return JSON.stringify(tracks);
-})();";
+        return JSON.stringify(tracks);
+    })();";
+
 
       string rawResult = await webViewMusicService.CoreWebView2.ExecuteScriptAsync(js);
-      string unescapedJson = JsonSerializer.Deserialize<string>(rawResult) ?? "[]";
-      return JsonSerializer.Deserialize<List<SongData>>(unescapedJson);
+
+      if (string.IsNullOrEmpty(rawResult) || rawResult == "null")
+        return null;
+
+      string unescapedJson = JsonConvert.DeserializeObject<string>(rawResult) ?? "[]";
+      var tracks = JsonConvert.DeserializeObject<List<SongData>>(unescapedJson);
+
+      return tracks;
     }
 
     private void EnsureHttps(object? sender, CoreWebView2NavigationStartingEventArgs args)
