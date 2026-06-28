@@ -1,5 +1,6 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using MusicFlashDrive.Downloader;
+using System.Text.Json;
 
 namespace MusicFlashDrive
 {
@@ -46,7 +47,7 @@ namespace MusicFlashDrive
       /// <summary>
       /// Ссылка на песню.
       /// </summary>
-      public string SourceUrl { get; set; } = string.Empty;
+      public string TrackUrl { get; set; } = string.Empty;
     }
     #endregion
 
@@ -68,9 +69,80 @@ namespace MusicFlashDrive
         webViewMusicService.GoForward();
     }
 
-    private void buttonGetInfo_Click(object sender, EventArgs e)
+    private async void buttonGetInfo_Click(object sender, EventArgs e)
     {
+      buttonGetInfo.Enabled = false;
 
+      try
+      {
+        var tracks = await ExtractTracksAsync();
+
+        if (tracks == null || tracks.Count == 0)
+        {
+          return;
+        }
+      }
+      finally 
+      { 
+        buttonGetInfo.Enabled = true; 
+      }
+    }
+
+    private async Task<List<SongData>?> ExtractTracksAsync()
+    {
+      string js = @"
+        (function() {
+            const tracks = [];
+            const trackLinks = document.querySelectorAll('a[href*=""/album/""][href*=""/track/""]');
+    
+    trackLinks.forEach(link => {
+        // 1. Название трека
+        const title = link.textContent?.trim() || '';
+        const trackUrl = link.href;
+        
+        // 2. Исполнитель: ищем ссылку на /artist/ в том же ""мета-контейнере""
+        // Из вашего лога видно, что исполнитель лежит в sibling-элементе того же родителя, что и ссылка на трек
+        let metaContainer = link.closest('.Meta_metaContainer__7i2dp') || 
+                           link.parentElement?.parentElement?.parentElement;
+        
+        let artist = '';
+        if (metaContainer) {
+            const artistLink = metaContainer.querySelector('a[href*=""/artist/""]');
+            artist = artistLink?.textContent?.trim() || '';
+        }
+        
+        // 3. Общий контейнер трека (для обложки и длительности)
+        // Поднимаемся вверх от ссылки, пока не найдём блок с картинкой и временем
+        let commonContainer = link.parentElement;
+        for (let i = 0; i < 10 && commonContainer; i++) {
+            if (commonContainer.querySelector('img') && 
+                Array.from(commonContainer.querySelectorAll('*')).some(el => /^\d{1,2}:\d{2}$/.test(el.textContent?.trim() || ''))) {
+                break;
+            }
+            commonContainer = commonContainer.parentElement;
+        }
+        
+        // 4. Обложка
+        const coverImg = commonContainer?.querySelector('img');
+        const coverUrl = coverImg?.src || coverImg?.getAttribute('data-src') || '';
+        
+        if (title) {
+            tracks.push({
+                title,
+                artist,
+                album: '',
+                coverUrl,
+                trackUrl
+            });
+        }
+    });
+    
+    return JSON.stringify(tracks);
+})();";
+
+      string rawResult = await webViewMusicService.CoreWebView2.ExecuteScriptAsync(js);
+      string unescapedJson = JsonSerializer.Deserialize<string>(rawResult) ?? "[]";
+      return JsonSerializer.Deserialize<List<SongData>>(unescapedJson);
     }
 
     private void EnsureHttps(object? sender, CoreWebView2NavigationStartingEventArgs args)
