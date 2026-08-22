@@ -1,9 +1,12 @@
 ﻿using MusicFlashDrive.FileOperation;
+using NLog;
 
 namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
+    private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+    
     #region Поля и Свойства
     /// <summary>
     /// Токен отмены.
@@ -28,13 +31,22 @@ namespace MusicFlashDrive
     #region Методы
     public void buttonPathSource_Click(object sender, EventArgs e)
     {
-      var openFileDialog = new FolderBrowserDialog();
-      var result = openFileDialog.ShowDialog();
-      if (!string.IsNullOrEmpty(result.ToString()))
+      try
       {
-        textBoxPathSource.Text = openFileDialog.SelectedPath;
-        Properties.Settings.Default.LastPathCopy = openFileDialog.SelectedPath;
-        Properties.Settings.Default.Save();
+        var openFileDialog = new FolderBrowserDialog();
+        var result = openFileDialog.ShowDialog();
+        if (!string.IsNullOrEmpty(result.ToString()))
+        {
+          textBoxPathSource.Text = openFileDialog.SelectedPath;
+          Properties.Settings.Default.LastPathCopy = openFileDialog.SelectedPath;
+          Properties.Settings.Default.Save();
+          logger.Info("Source path selected: {path}", openFileDialog.SelectedPath);
+        }
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error selecting source path");
+        throw;
       }
     }
 
@@ -42,6 +54,8 @@ namespace MusicFlashDrive
     {
       try
       {
+        logger.Info("Starting file copy operation");
+        
         buttonCopyFile.Enabled = false;
         buttonCancel.Enabled = true;
 
@@ -58,11 +72,19 @@ namespace MusicFlashDrive
 
           var fileCopy = new FileCopy(textBoxPathSource.Text, $"{comboBoxDrive.SelectedItem}", CopyMode);
           await fileCopy.Execute(progress, cancellationToken.Token);
+          
+          logger.Info("File copy operation completed successfully");
         }
       }
       catch (OperationCanceledException)
       {
         toolStripStatusLabel.Text = "Операция отменена";
+        logger.Warn("File copy operation was cancelled");
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error during file copy operation");
+        throw;
       }
       finally
       {
@@ -73,20 +95,39 @@ namespace MusicFlashDrive
 
     private void buttonCancel_Click(object sender, EventArgs e)
     {
+      logger.Info("User requested to cancel the operation");
       cancellationToken?.Cancel();
     }
 
     private void buttonFillFolder_Click(object sender, EventArgs e)
     {
-      var browser = new BrowserForm(textBoxPathSource.Text);
-      browser.ShowDialog();
+      try
+      {
+        logger.Debug("Opening browser form for folder: {path}", textBoxPathSource.Text);
+        var browser = new BrowserForm(textBoxPathSource.Text);
+        browser.ShowDialog();
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error opening browser form");
+        throw;
+      }
     }
 
     private void comboBoxDrive_SelectedIndexChanged(object sender, EventArgs e)
     {
-      Drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady
-          && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}") ?? throw new ArgumentNullException();
-      StatusFillDrive();
+      try
+      {
+        Drive = DriveInfo.GetDrives().FirstOrDefault(drive => drive.IsReady
+            && drive.DriveType == DriveType.Removable && drive.Name == $"{comboBoxDrive.SelectedItem}") ?? throw new ArgumentNullException();
+        logger.Info("Drive selected: {drive}", Drive.Name);
+        StatusFillDrive();
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error selecting drive");
+        throw;
+      }
     }
 
     /// <summary>
@@ -119,23 +160,41 @@ namespace MusicFlashDrive
     #region Конструктор
     public MainForm()
     {
-      InitializeComponent();
-      toolStripStatusLabel.Text = string.Empty;
-      buttonCancel.Enabled = false;
-      labelHello.Text = $"Hello, {Environment.UserName}!";
-
-      comboBoxCopyMode.Items.AddRange(new[] { "Как есть", "Простой режим", "Артист", "Артист и Альбом" });
-      comboBoxCopyMode.SelectedIndex = 0;
-
-      var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
-      if (drives.Any())
+      try
       {
-        comboBoxDrive.Items.AddRange(drives.Select(drive => drive.Name).ToArray());
-        comboBoxDrive.SelectedIndex = 0;
-      }
+        InitializeComponent();
+        toolStripStatusLabel.Text = string.Empty;
+        buttonCancel.Enabled = false;
+        labelHello.Text = $"Hello, {Environment.UserName}!";
+        
+        logger.Info("MainForm initializing for user: {user}", Environment.UserName);
 
-      if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPathCopy))
-        textBoxPathSource.Text = Properties.Settings.Default.LastPathCopy;
+        comboBoxCopyMode.Items.AddRange(new[] { "Как есть", "Простой режим", "Артист", "Артист и Альбом" });
+        comboBoxCopyMode.SelectedIndex = 0;
+
+        var drives = DriveInfo.GetDrives().Where(drive => drive.IsReady && drive.DriveType == DriveType.Removable);
+        if (drives.Any())
+        {
+          comboBoxDrive.Items.AddRange(drives.Select(drive => drive.Name).ToArray());
+          comboBoxDrive.SelectedIndex = 0;
+          logger.Info("Found {count} removable drives", drives.Count());
+        }
+        else
+        {
+          logger.Warn("No removable drives found");
+        }
+
+        if (!string.IsNullOrEmpty(Properties.Settings.Default.LastPathCopy))
+        {
+          textBoxPathSource.Text = Properties.Settings.Default.LastPathCopy;
+          logger.Debug("Restored last path: {path}", Properties.Settings.Default.LastPathCopy);
+        }
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error initializing MainForm");
+        throw;
+      }
     }
     #endregion
   }

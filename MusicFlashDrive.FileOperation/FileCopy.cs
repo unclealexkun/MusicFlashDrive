@@ -1,10 +1,14 @@
 ﻿namespace MusicFlashDrive.FileOperation
 {
+  using NLog;
+
   /// <summary>
   /// Копирование файлов.
   /// </summary>
   public class FileCopy : IFileCopy
   {
+    private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+    
     #region Константы
 
     /// <summary>
@@ -43,7 +47,11 @@
 
     public async Task Execute(IProgress<CopyProgressInfo> progress, CancellationToken token = default)
     {
+      logger.Info("Starting file copy operation from {source} to {destination}", Source.FullName, Destination.FullName);
+      
       var files = Source.GetFiles(SearchPattern, SearchOption.AllDirectories);
+      logger.Debug("Found {count} MP3 files to process", files.Length);
+      
       var steps = (int)Math.Round((double)files.Length / ChunkSize, MidpointRounding.ToPositiveInfinity);
 
       int processedFilesCount = 0;
@@ -69,6 +77,8 @@
           Progress = (int)Math.Round((double)(processedFilesCount * 100 / files.Length))
         };
         progress.Report(copyProgressInfo);
+        
+        logger.Debug("Progress: {progress}%", copyProgressInfo.Progress);
       }
 
       processedFilesCount = 0;
@@ -78,6 +88,8 @@
         Progress = 0
       };
       progress.Report(copyProgressInfo);
+      
+      logger.Info("File copy operation completed");
     }
 
     #endregion
@@ -93,36 +105,55 @@
     {
       foreach (var file in files)
       {
-        var destinationFileName = this.copyMode.GeneratePathDestinationFile(this.Source, file, this.Destination);
-        if (File.Exists(destinationFileName))
-          if (HashComparison.Compare(file.FullName, destinationFileName))
-            continue;
-
-        var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
-        if (!Directory.Exists(destinationDirectoryName) && !string.IsNullOrEmpty(destinationDirectoryName))
-          Directory.CreateDirectory(destinationDirectoryName);
-
         try
         {
-          int bufferSize = 1024;
-          token.ThrowIfCancellationRequested();
-          using (var sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: true))
-          {
-            using (var destinationStream = new FileStream(destinationFileName, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, useAsync: true))
+          var destinationFileName = this.copyMode.GeneratePathDestinationFile(this.Source, file, this.Destination);
+          if (File.Exists(destinationFileName))
+            if (HashComparison.Compare(file.FullName, destinationFileName))
             {
-              await sourceStream.CopyToAsync(destinationStream, bufferSize, token);
+              logger.Debug("File already exists and matches hash, skipping: {file}", file.Name);
+              continue;
             }
+
+          var destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
+          if (!Directory.Exists(destinationDirectoryName) && !string.IsNullOrEmpty(destinationDirectoryName))
+          {
+            logger.Debug("Creating directory: {directory}", destinationDirectoryName);
+            Directory.CreateDirectory(destinationDirectoryName);
+          }
+
+          try
+          {
+            int bufferSize = 1024;
+            token.ThrowIfCancellationRequested();
+            logger.Debug("Copying file: {file} to {destination}", file.Name, destinationFileName);
+            
+            using (var sourceStream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize, useAsync: true))
+            {
+              using (var destinationStream = new FileStream(destinationFileName, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize, useAsync: true))
+              {
+                await sourceStream.CopyToAsync(destinationStream, bufferSize, token);
+              }
+            }
+            logger.Debug("Successfully copied file: {file}", file.Name);
+          }
+          catch (OperationCanceledException)
+          {
+            logger.Warn("File copy operation was cancelled for file: {file}", file.Name);
+            throw;
+          }
+          catch (IOException ex)
+          {
+            logger.Error(ex, "IO error copying file: {file}", file.Name);
+          }
+          catch (UnauthorizedAccessException ex)
+          {
+            logger.Error(ex, "Access denied copying file: {file}", file.Name);
           }
         }
-        catch (OperationCanceledException)
+        catch (Exception ex)
         {
-          throw;
-        }
-        catch (IOException)
-        {
-        }
-        catch (UnauthorizedAccessException)
-        {
+          logger.Error(ex, "Unexpected error processing file: {file}", file.Name);
         }
       }
     }
@@ -133,14 +164,30 @@
 
     public FileCopy(string source, string destination, ICopyMode copyMode)
     {
-      if (!Path.Exists(source))
-        throw new DirectoryNotFoundException(source);
-      if (!Path.Exists(destination))
-        throw new DirectoryNotFoundException(destination);
+      try
+      {
+        if (!Path.Exists(source))
+        {
+          logger.Error("Source directory not found: {source}", source);
+          throw new DirectoryNotFoundException(source);
+        }
+        if (!Path.Exists(destination))
+        {
+          logger.Error("Destination directory not found: {destination}", destination);
+          throw new DirectoryNotFoundException(destination);
+        }
 
-      this.Source = new DirectoryInfo(source);
-      this.Destination = new DirectoryInfo(destination);
-      this.copyMode = copyMode;
+        this.Source = new DirectoryInfo(source);
+        this.Destination = new DirectoryInfo(destination);
+        this.copyMode = copyMode;
+        
+        logger.Info("FileCopy initialized - Source: {source}, Destination: {destination}", source, destination);
+      }
+      catch (Exception ex)
+      {
+        logger.Error(ex, "Error initializing FileCopy");
+        throw;
+      }
     }
 
     #endregion
