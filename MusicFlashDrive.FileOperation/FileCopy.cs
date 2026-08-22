@@ -7,10 +7,11 @@
   /// </summary>
   public class FileCopy : IFileCopy
   {
-    private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-    
     #region Константы
-
+    /// <summary>
+    /// Логирование.
+    /// </summary>
+    private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
     /// <summary>
     /// Фрагмент.
     /// </summary>

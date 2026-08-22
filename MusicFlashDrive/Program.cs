@@ -28,7 +28,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Fatal(ex, "Application terminated unexpectedly.");
+        logger.Fatal(ex.Message, "Application terminated unexpectedly.");
         throw;
       }
       finally

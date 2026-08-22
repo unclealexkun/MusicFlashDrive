@@ -5,8 +5,14 @@ namespace MusicFlashDrive
 {
   public partial class MainForm : Form
   {
+
+    #region Константы
+    /// <summary>
+    /// Логирование.
+    /// </summary>
     private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-    
+    #endregion
+
     #region Поля и Свойства
     /// <summary>
     /// Токен отмены.
@@ -45,7 +51,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Error(ex, "Error selecting source path");
+        logger.Error(ex.Message, "Error selecting source path");
         throw;
       }
     }
@@ -83,7 +89,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Error(ex, "Error during file copy operation");
+        logger.Error(ex.Message, "Error during file copy operation");
         throw;
       }
       finally
@@ -109,7 +115,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Error(ex, "Error opening browser form");
+        logger.Error(ex.Message, "Error opening browser form");
         throw;
       }
     }
@@ -125,7 +131,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Error(ex, "Error selecting drive");
+        logger.Error(ex.Message, "Error selecting drive");
         throw;
       }
     }
@@ -192,7 +198,7 @@ namespace MusicFlashDrive
       }
       catch (Exception ex)
       {
-        logger.Error(ex, "Error initializing MainForm");
+        logger.Error(ex.Message, "Error initializing MainForm");
         throw;
       }
     }
